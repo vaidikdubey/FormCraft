@@ -9,12 +9,11 @@ dotenv.config({
 const PORT = process.env.PORT || 8000;
 
 //Database connection
-connectDb();
-
-app.get("/", (req, res) => {
-  res.send("Welcome to FormCraft!");
-});
-
-app.listen(PORT, () => {
-  console.log(`Backend is listening on port: ${PORT}`);
-});
+connectDb()
+  .then(() => {
+    app.listen(PORT, console.log(`Server is running on PORT: ${PORT}`));
+  })
+  .catch((err) => {
+    console.error("Database connection error: ", err);
+    process.exit(1);
+  });

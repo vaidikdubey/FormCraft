@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { errorHandler } from "./middlewares/error.middleware.js";
+import { asyncHandler } from "./utils/async-handler.js";
 
 const app = express();
 
@@ -17,5 +19,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 //Custom routes import
+
+// Any error thrown in routes above will end up here
+app.use(errorHandler);
 
 export default app;
