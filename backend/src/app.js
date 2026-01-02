@@ -19,6 +19,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 //Custom routes import
+import authRouter from "./routes/auth.routes.js";
+import formRouter from "./routes/form.routes.js";
+import responseRouter from "./routes/response.routes.js";
+import paymentRouter from "./routes/payment.routes.js";
+import healthCheckRouter from "./routes/healthcheck.routes.js";
+
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/form", formRouter);
+app.use("/api/v1/response", responseRouter);
+app.use("/api/v1/payment", paymentRouter);
+app.use("/api/v1/healthcheck", healthCheckRouter);
 
 // Any error thrown in routes above will end up here
 app.use(errorHandler);
