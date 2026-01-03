@@ -10,7 +10,7 @@ import {
   sendEmail,
   verifiedEmailMailgenContent,
 } from "../utils/mail.js";
-import { cookieOptions, cookieOptions } from "../utils/constants.js";
+import { cookieOptions } from "../utils/constants.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -432,7 +432,6 @@ export {
   forgotPassword,
   resetPassword,
   resendVerificationEmail,
-  refreshAccessToken,
   changePassword,
   updateProfile,
   deleteProfile,

@@ -6,7 +6,6 @@ import {
   getProfile,
   loginUser,
   logoutUser,
-  refreshAccessToken,
   registerUser,
   resendVerificationEmail,
   resetPassword,
