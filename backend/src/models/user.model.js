@@ -61,6 +61,33 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.pre("findOneAndDelete", async function (next) {
+  try {
+    const userId = this.getQuery()._id;
+
+    // 1. Find all forms belonging to this user
+    const userForms = await mongoose
+      .model("Form")
+      .find({ ownerId: userId })
+      .select("_id");
+    const formIds = userForms.map((form) => form._id);
+
+    // 2. Delete responses submitted To those forms
+    await mongoose.model("Response").deleteMany({ formId: { $in: formIds } });
+
+    // 3. Delete the forms themselves
+    await mongoose.model("Form").deleteMany({ ownerId: userId });
+
+    // 4. Delete user's own activity (Responses they made elsewhere & Payments)
+    await mongoose.model("Response").deleteMany({ userId });
+    await mongoose.model("Payment").deleteMany({ userId });
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };

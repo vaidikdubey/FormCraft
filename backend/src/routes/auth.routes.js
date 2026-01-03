@@ -32,8 +32,6 @@ router.route("/reset-password/:token").post(resetPassword);
 
 router.route("resend-verification").get(resendVerificationEmail);
 
-router.route("/refresh-access-token").get(refreshAccessToken);
-
 router.route("change-password").post(changePassword);
 
 router.route("update-profile").patch(updateProfile);

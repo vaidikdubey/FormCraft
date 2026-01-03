@@ -1,0 +1,161 @@
+import Mailgen from "mailgen";
+import nodemailer from "nodemailer";
+
+export const sendEmail = async (options) => {
+  const mailGenerator = new Mailgen({
+    theme: "default",
+    product: {
+      name: "FormCraft",
+      link: "https://mailgen.js/",
+    },
+  });
+
+  const emailText = mailGenerator.generatePlaintext(options.mailgenContent);
+  const emailHTML = mailGenerator.generate(options.mailgenContent);
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.MAILTRAP_HOST,
+    port: process.env.MAILTRAP_PORT,
+    secure: false,
+    auth: {
+      user: process.env.MAILTRAP_SMTP_USER,
+      pass: process.env.MAILTRAP_SMTP_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: "FormCraft <team@formcraft.com>",
+    to: options.email,
+    subject: options.subject,
+    text: emailText,
+    html: emailHTML,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+
+    console.log(
+      `Email sent successfully to user ${options.email} for subject: ${options.subject}`,
+    );
+  } catch (error) {
+    console.error("Error sending email: ", error);
+  }
+};
+
+export const emailVerificationMailgenContent = (username, verificationUrl) => {
+  return {
+    body: {
+      name: username,
+      intro: "Welcome to FormCraft! We're very excited to have you on board.",
+      action: {
+        instructions: "To get started with FormCraft, please click here:",
+        button: {
+          color: "#22BC66", // Optional action button color
+          text: "Verify your email",
+          link: verificationUrl,
+        },
+      },
+      outro:
+        "Need help, or have questions? Just reply to this email, we'd love to help.",
+    },
+  };
+};
+
+export const emailReverificationMailgenContent = (
+  username,
+  verificationUrl,
+) => {
+  return {
+    body: {
+      name: username,
+      intro:
+        "We noticed that your email address has been updated. Verifying your email helps keep your FormCraft account secure and ensures you don’t miss important updates.",
+      action: {
+        instructions:
+          "Please confirm your email address by clicking the button below:",
+        button: {
+          color: "#22BC66",
+          text: "Verify your email",
+          link: verificationUrl,
+        },
+      },
+      outro:
+        "If you didn’t request this email, you can safely ignore it. If you need any help, just reply to this email and our team will assist you.",
+    },
+  };
+};
+
+export const forgotPasswordMailgenContent = (username, passwordResetUrl) => {
+  return {
+    body: {
+      name: username,
+      intro:
+        "You have received this email because a password reset request for your FormCraft account was received",
+      action: {
+        instructions: "Click the button below to reset your password:",
+        button: {
+          color: "#EE3266",
+          text: "Reset your password",
+          link: passwordResetUrl,
+        },
+      },
+      outro:
+        "If you did not request a password reset, no further action is required on your part.",
+    },
+  };
+};
+
+export const verifiedEmailMailgenContent = (username) => {
+  return {
+    body: {
+      name: username,
+      intro: "Your email has been successfully verified! Welcome to FormCraft.",
+      action: {
+        instructions:
+          "To access your account and start exploring, please click here:",
+        button: {
+          color: "#55eeffff",
+          text: "Login to FormCraft",
+          link: `${process.env.BASE_URL}/api/v1/auth/login`,
+        },
+      },
+      outro:
+        "If you have any questions or need assistance, feel free to reply to this email. We're happy to help!",
+    },
+  };
+};
+
+export const resendEmailVerificationMailgenContent = (
+  username,
+  verificationUrl,
+) => {
+  return {
+    body: {
+      name: username,
+      intro:
+        "It looks like you requested to resend your email verification link for your FormCraft account.",
+      action: {
+        instructions: "Please click the button below to verify your email:",
+        button: {
+          color: "#22BC66",
+          text: "Verify your email",
+          link: verificationUrl,
+        },
+      },
+      outro:
+        "If you did not request this email, you can safely ignore it. Need help? Just reply to this email, we'd love to assist you.",
+    },
+  };
+};
+
+export const profileDeletionMailgenContent = (username) => {
+  return {
+    body: {
+      name: username,
+      intro:
+        "We’re sorry to see you go. This email is to confirm that your FormCraft account has been successfully deleted, as per your request.",
+      outro:
+        "All data associated with your account, including forms and responses, is no longer accessible. If you believe this action was taken in error or have any concerns, please reply to this email and our team will assist you.",
+    },
+  };
+};

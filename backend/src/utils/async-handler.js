@@ -7,17 +7,14 @@ export function asyncHandler(fn) {
 
       return result;
     } catch (error) {
-      const formattedError =
-        error instanceof ApiError
-          ? error
-          : new ApiError(
-              500,
-              error.message || "Internal server error",
-              [error],
-              error.stack,
-            );
+      if (error instanceof ApiError) return next(error);
 
-      next(formattedError);
+      const statusCode = error.statusCode || 500;
+      const message = error.message || "Internal server error";
+
+      const apiError = new ApiError(statusCode, message, [error], error.stack);
+
+      next(apiError);
     }
   };
 }
