@@ -6,7 +6,7 @@ export const sendEmail = async (options) => {
     theme: "default",
     product: {
       name: "FormCraft",
-      link: "https://mailgen.js/",
+      link: "https://formcraft.com",
     },
   });
 

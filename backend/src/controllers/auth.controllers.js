@@ -9,8 +9,10 @@ import {
   profileDeletionMailgenContent,
   sendEmail,
   verifiedEmailMailgenContent,
+  resendEmailVerificationMailgenContent,
 } from "../utils/mail.js";
 import { cookieOptions } from "../utils/constants.js";
+import crypto from "crypto";
 
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -29,8 +31,22 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const temporaryToken = user.generateTemporaryToken();
 
-  user.emailVerificationToken = temporaryToken.token;
+  user.emailVerificationToken = temporaryToken.hashedToken;
   user.emailVerificationExpiry = temporaryToken.tokenExpiry;
+
+  const newAccessToken = user.generateAccessToken();
+  const newRefreshToken = user.generateRefreshToken();
+
+  user.refreshToken = newRefreshToken;
+
+  res.cookie("accessToken", newAccessToken, cookieOptions);
+
+  const refreshTokenCookieOptions = {
+    ...cookieOptions,
+    maxAge: 7 * 24 * 60 * 60 * 1000, //7days
+  };
+
+  res.cookie("refreshToken", newRefreshToken, refreshTokenCookieOptions);
 
   await user.save();
 
@@ -39,7 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
     subject: "Verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.name,
-      `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.token}`,
+      `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.unHashedToken}`,
     ),
   };
 
@@ -106,8 +122,10 @@ const verifyUser = asyncHandler(async (req, res) => {
 
   if (!token) throw new ApiError(404, "Token not found");
 
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
   const user = await User.findOne({
-    emailVerificationToken: token,
+    emailVerificationToken: hashedToken,
     emailVerificationExpiry: { $gt: Date.now() },
   });
 
@@ -194,7 +212,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   const temporaryToken = user.generateTemporaryToken();
 
-  user.resetPasswordToken = temporaryToken.token;
+  user.resetPasswordToken = temporaryToken.hashedToken;
   user.resetPasswordExpiry = temporaryToken.tokenExpiry;
 
   await user.save();
@@ -204,7 +222,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     subject: "Reset your password",
     mailgenContent: forgotPasswordMailgenContent(
       user.name,
-      `${process.env.BASE_URL}/api/v1/auth/reset-password/${temporaryToken.token}`,
+      `${process.env.BASE_URL}/api/v1/auth/reset-password/${temporaryToken.unHashedToken}`,
     ),
   };
 
@@ -228,8 +246,10 @@ const resetPassword = asyncHandler(async (req, res) => {
 
   if (!token) throw new ApiError(404, "Token not found");
 
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
   const user = await User.findOne({
-    resetPasswordToken: token,
+    resetPasswordToken: hashedToken,
     resetPasswordExpiry: { $gt: Date.now() },
   });
 
@@ -261,7 +281,7 @@ const resendVerificationEmail = asyncHandler(async (req, res) => {
 
   const temporaryToken = user.generateTemporaryToken();
 
-  user.emailVerificationToken = temporaryToken.token;
+  user.emailVerificationToken = temporaryToken.hashedToken;
   user.emailVerificationExpiry = temporaryToken.tokenExpiry;
 
   await user.save();
@@ -269,9 +289,9 @@ const resendVerificationEmail = asyncHandler(async (req, res) => {
   const emailOptions = {
     email: user.email,
     subject: "Verify your email",
-    mailgenContent: resendVerificationEmail(
+    mailgenContent: resendEmailVerificationMailgenContent(
       user.name,
-      `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.token}`,
+      `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.unHashedToken}`,
     ),
   };
 
@@ -345,26 +365,16 @@ const updateProfile = asyncHandler(async (req, res) => {
   if (name) updatedData.name = name;
 
   if (email) {
-    const existingUser = await User.findOne({ email });
+    const emailConflict = await User.findOne({ email });
 
-    if (existingUser && existingUser._id.toString() !== req.user.id)
+    if (emailConflict && emailConflict._id.toString() !== req.user.id)
       throw new ApiError(
         409,
         "Email is already registered with another account",
       );
+
     updatedData.email = email;
     updatedData.isEmailVerified = false;
-
-    const emailOptions = {
-      email: user.email,
-      subject: "Verify your email",
-      mailgenContent: emailReverificationMailgenContent(
-        user.name,
-        `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.token}`,
-      ),
-    };
-
-    await sendEmail(emailOptions);
   }
 
   const user = await User.findByIdAndUpdate(
@@ -374,6 +384,26 @@ const updateProfile = asyncHandler(async (req, res) => {
   ).select("-password -refreshToken");
 
   if (!user) throw new ApiError(404, "User not found");
+
+  if (email) {
+    const temporaryToken = user.generateTemporaryToken();
+
+    user.emailVerificationToken = temporaryToken.hashedToken;
+    user.emailVerificationExpiry = temporaryToken.tokenExpiry;
+
+    await user.save();
+
+    const emailOptions = {
+      email: user.email,
+      subject: "Verify your email",
+      mailgenContent: emailReverificationMailgenContent(
+        user.name,
+        `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.unHashedToken}`,
+      ),
+    };
+
+    await sendEmail(emailOptions);
+  }
 
   res.status(200).json(
     new ApiResponse(
@@ -389,9 +419,23 @@ const updateProfile = asyncHandler(async (req, res) => {
 });
 
 const deleteProfile = asyncHandler(async (req, res) => {
-  const user = await User.findByIdAndDelete(req.user.id);
+  const { password } = req.body;
+
+  if (!password)
+    throw new ApiError(404, "Password is required to delete account");
+
+  const user = await User.findById(req.user.id);
 
   if (!user) throw new ApiError(404, "User not found");
+
+  const isPasswordMatched = user.isPasswordCorrect(password);
+
+  if (!isPasswordMatched) throw new ApiError(401, "Invalid password");
+
+  user.isDeleted = true;
+  user.deletedAt = new Date();
+
+  await user.save();
 
   const emailOptions = {
     email: user.email,

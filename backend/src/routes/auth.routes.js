@@ -12,29 +12,46 @@ import {
   updateProfile,
   verifyUser,
 } from "../controllers/auth.controllers.js";
+import { validate } from "../middlewares/validator.middleware.js";
+import {
+  changePasswordValidate,
+  forgotPasswordValidator,
+  resetPasswordValidate,
+  userLoginValidator,
+  userRegistrationValidator,
+} from "../validators/index.js";
+import { isLoggedIn } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.route("/register").post(registerUser);
+router
+  .route("/register")
+  .post(userRegistrationValidator(), validate, registerUser);
 
-router.route("/login").post(loginUser);
+router.route("/login").post(userLoginValidator(), validate, loginUser);
 
 router.route("/verify/:token").get(verifyUser);
 
-router.route("/me").get(getProfile);
+router.route("/me").get(isLoggedIn, getProfile);
 
-router.route("/logout").get(logoutUser);
+router.route("/logout").get(isLoggedIn, logoutUser);
 
-router.route("/forgot-password").post(forgotPassword);
+router
+  .route("/forgot-password")
+  .post(forgotPasswordValidator(), validate, forgotPassword);
 
-router.route("/reset-password/:token").post(resetPassword);
+router
+  .route("/reset-password/:token")
+  .post(resetPasswordValidate(), validate, resetPassword);
 
-router.route("resend-verification").get(resendVerificationEmail);
+router.route("/resend-verification").get(isLoggedIn, resendVerificationEmail);
 
-router.route("change-password").post(changePassword);
+router
+  .route("/change-password")
+  .post(isLoggedIn, changePasswordValidate(), validate, changePassword);
 
-router.route("update-profile").patch(updateProfile);
+router.route("/update-profile").patch(isLoggedIn, updateProfile);
 
-router.route("/delete-user").delete(deleteProfile);
+router.route("/delete-user").delete(isLoggedIn, deleteProfile);
 
 export default router;

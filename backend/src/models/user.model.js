@@ -50,18 +50,25 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true },
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next;
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
-userSchema.pre("findOneAndDelete", async function (next) {
+userSchema.pre("findOneAndDelete", async function () {
   try {
     const userId = this.getQuery()._id;
 
@@ -81,11 +88,14 @@ userSchema.pre("findOneAndDelete", async function (next) {
     // 4. Delete user's own activity (Responses they made elsewhere & Payments)
     await mongoose.model("Response").deleteMany({ userId });
     await mongoose.model("Payment").deleteMany({ userId });
-
-    next();
   } catch (error) {
-    next(error);
+    console.error("Error deleting cascaded data: ", error);
   }
+});
+
+userSchema.pre(/^find/, function () {
+  this.find({ isDeleted: { $ne: true } });
+  return;
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
@@ -114,11 +124,16 @@ userSchema.methods.generateRefreshToken = function () {
 };
 
 userSchema.methods.generateTemporaryToken = function () {
-  const token = crypto.randomBytes(20).toString("hex");
+  const unHashedToken = crypto.randomBytes(20).toString("hex");
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(unHashedToken)
+    .digest("hex");
 
   const tokenExpiry = Date.now() + 20 * 60 * 1000; //20 mins
 
-  return { token, tokenExpiry };
+  return { unHashedToken, hashedToken, tokenExpiry };
 };
 
 export const User = mongoose.model("User", userSchema);
