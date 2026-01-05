@@ -32,7 +32,7 @@ const getFormById = asyncHandler(async (req, res) => {
 
   const form = await Form.findById(id);
 
-  if (form.ownerId.equals(req.user.id))
+  if (!form.ownerId.equals(req.user.id))
     throw new ApiError(
       403,
       "You do not have permission to perform this action",
@@ -133,7 +133,7 @@ const deleteForm = asyncHandler(async (req, res) => {
 
   const form = await Form.findById(id);
 
-  if (form.ownerId.equals(req.user.id))
+  if (!form.ownerId.equals(req.user.id))
     throw new ApiError(
       403,
       "You do not have permission to perform this action",
@@ -149,7 +149,7 @@ const deleteForm = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        deleteForm,
+        deletedForm,
         "Form and all responses deleted successfully",
       ),
     );
@@ -169,7 +169,7 @@ const publishForm = asyncHandler(async (req, res) => {
 
   if (!form) throw new ApiError(404, "Form not found");
 
-  if (form.ownerId.equals(req.user.id))
+  if (!form.ownerId.equals(req.user.id))
     throw new ApiError(
       403,
       "You do not have permission to perform this action",
@@ -208,7 +208,7 @@ const getFormStats = asyncHandler(async (req, res) => {
 
   if (!form) throw new ApiError(404, "Form not found");
 
-  if (form.ownerId.equals(req.user.id))
+  if (!form.ownerId.equals(req.user.id))
     throw new ApiError(
       403,
       "You do not have permission to perform this action",

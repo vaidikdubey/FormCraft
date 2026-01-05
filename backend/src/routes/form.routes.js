@@ -30,6 +30,6 @@ router.route("/stats/:id").get(isLoggedIn, getFormStats);
 
 router.route("/public/:url").get(getFormPublicView);
 
-router.route("/clone/:id").post(isLoggedIn, cloneForm);
+router.route("/clone/:id").get(isLoggedIn, cloneForm);
 
 export default router;
