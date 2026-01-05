@@ -1,27 +1,29 @@
-import mongoose, { Schema } from "mongoose";
-import { AvailableFormFields, FormFieldTypes } from "../utils/constants.js";
+import { Schema } from "mongoose";
+import { AvailableFormFields } from "../utils/constants.js";
 
-const formFieldSchema = new Schema(
-  {
-    type: {
-      type: String,
-      enum: AvailableFormFields,
-      required: true,
-    },
-    label: {
-      type: String,
-      required: true,
-    },
-    required: {
-      type: Boolean,
-      required: true,
-    },
-    options: {
-      type: [String],
-      default: [],
-    },
+export const formFieldSchema = new Schema({
+  fieldKey: {
+    type: String,
+    required: true,
   },
-  { timestamps: true },
-);
-
-export const Field = mongoose.model("Field", formFieldSchema);
+  type: {
+    type: String,
+    enum: AvailableFormFields,
+    required: true,
+  },
+  label: {
+    type: String,
+    required: true,
+  },
+  placeholder: {
+    type: String,
+  },
+  required: {
+    type: Boolean,
+    required: false,
+  },
+  options: {
+    type: [String],
+    default: [],
+  },
+});

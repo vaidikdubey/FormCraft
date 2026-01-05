@@ -26,6 +26,8 @@ export const AvailableFormFields = Object.values(FormFieldTypes);
 
 export const ConditionalRulesOperators = {
   EQUALS: "equals",
+  NOT_EQUALS: "not_equals",
+  CONTAINS: "contains",
 };
 
 export const AvailableConditionalOperators = Object.values(

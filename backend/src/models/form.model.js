@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import { formFieldSchema } from "./field.model.js";
+import { conditionalRuleSchema } from "./condition.model.js";
 
 const formSchema = new Schema(
   {

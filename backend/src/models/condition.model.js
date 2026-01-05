@@ -1,37 +1,30 @@
-import mongoose, { mongo, Schema } from "mongoose";
+import { Schema } from "mongoose";
 import {
   AvailableConditionalOperators,
   AvailableConditionalActions,
 } from "../utils/constants.js";
 
-const conditionalRuleSchema = new Schema(
-  {
-    sourceFieldId: {
-      type: Schema.Types.ObjectId,
-      ref: "Form",
-      required: true,
-    },
-    operator: {
-      type: String,
-      enum: AvailableConditionalOperators,
-      required: true,
-    },
-    value: {
-      type: String,
-      required: true,
-    },
-    targetFieldId: {
-      type: Schema.Types.ObjectId,
-      ref: "Form",
-      required: true,
-    },
-    actions: {
-      type: String,
-      enum: AvailableConditionalActions,
-      required: true,
-    },
+export const conditionalRuleSchema = new Schema({
+  sourceFieldId: {
+    type: String,
+    required: true,
   },
-  { timestamps: true },
-);
-
-export const Condition = mongoose.model("Condition", conditionalRuleSchema);
+  operator: {
+    type: String,
+    enum: AvailableConditionalOperators,
+    required: true,
+  },
+  value: {
+    type: String,
+    required: true,
+  },
+  targetFieldId: {
+    type: String,
+    required: true,
+  },
+  actions: {
+    type: String,
+    enum: AvailableConditionalActions,
+    required: true,
+  },
+});
