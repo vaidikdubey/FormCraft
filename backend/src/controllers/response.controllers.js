@@ -245,7 +245,10 @@ const exportResponses = asyncHandler(async (req, res) => {
       "You do not have permission to export these responses",
     );
 
-  const responses = await Response.find({ formId }).select("userId", "name");
+  const responses = await Response.find({ formId }).populate(
+    "userId",
+    "name email",
+  );
 
   if (!responses || responses.length === 0)
     throw new ApiError(400, "No responses available to export");
@@ -257,7 +260,8 @@ const exportResponses = asyncHandler(async (req, res) => {
         .toISOString()
         .split("T")[1]
         .split(".")[0], //HH:MM:SS
-      "Responder ID": resp.userId ? resp.userId.name : "Anonymous",
+      "Responder Name": resp.userId ? resp.userId.name : "Anonymous",
+      "Responder Email": resp.userId ? resp.userId.email : "-",
     };
 
     form.fields.forEach((field) => {
