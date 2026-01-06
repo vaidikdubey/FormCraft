@@ -11,6 +11,7 @@ const submitResponse = asyncHandler(async (req, res) => {
   //get formId from req.params
   //find form based on id
   //check if form is live else throw error
+  //check if the total responses is under the allowed response limit for user
   //get answer from req.body
   //check if form allows anonymous else get user.id or throw error
   //create new reponse model document
@@ -20,12 +21,26 @@ const submitResponse = asyncHandler(async (req, res) => {
 
   if (!formId) throw new ApiError(404, "Form ID is required");
 
-  const form = await Form.findById(formId);
+  const form = await Form.findById(formId).populate("ownerId");
 
   if (!form) throw new ApiError(404, "Form not found");
 
+  const owner = form.ownerId;
+
   if (!form.isPublished)
     throw new ApiError(403, "This form is currently not accepting responses");
+
+  const totalUserResponses = await Response.countDocuments({
+    formId: {
+      $in: await Form.find({ ownerId: owner._id }).distinct("_id"),
+    },
+  });
+
+  if (totalUserResponses >= owner.responseLimit)
+    throw new ApiError(
+      403,
+      "This form is no longer accepting responses as the owner has reached their plan limit.",
+    );
 
   const { answer } = req.body;
 
