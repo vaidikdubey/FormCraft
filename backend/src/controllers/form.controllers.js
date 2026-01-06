@@ -81,11 +81,14 @@ const updateForm = asyncHandler(async (req, res) => {
   if (!id) throw new ApiError(404, "Form ID is required");
 
   const { title, description, fields, conditions, allowAnonymous } = req.body;
-  
+
   const user = await User.findById(req.user.id);
 
   if (req.body.allowEditing === true && user.role !== UserRolesEnum.PAID) {
-    throw new ApiError(402, "Response editing is a Pro feature. Please upgrage your plan.");
+    throw new ApiError(
+      402,
+      "Response editing is a Pro feature. Please upgrage your plan.",
+    );
   }
 
   const form = await Form.findById(id);
@@ -164,7 +167,8 @@ const deleteForm = asyncHandler(async (req, res) => {
 });
 
 const publishForm = asyncHandler(async (req, res) => {
-  //get formId from req.params()
+  //get formId from req.params
+  //get isPublished from req.body
   //find form using id
   //generate new public URL
   //set publicURL to new public URL if it doesn't already have one url
@@ -173,9 +177,13 @@ const publishForm = asyncHandler(async (req, res) => {
   //send response with new URL
   const { id } = req.params;
 
-  const form = await Form.findById(id);
+  const { isPublished } = req.body;
+
+  const form = await Form.findById(id).populate("ownerId", "role");
 
   if (!form) throw new ApiError(404, "Form not found");
+
+  const userRole = form.ownerId?.role;
 
   if (!form.ownerId.equals(req.user.id))
     throw new ApiError(
@@ -183,7 +191,10 @@ const publishForm = asyncHandler(async (req, res) => {
       "You do not have permission to perform this action",
     );
 
-  form.isPublished = true;
+  if (isPublished && form.allowEditing && userRole === UserRolesEnum.FREE)
+    throw new ApiError(402, "This form uses Pro features. Upgrade to publish.");
+
+  form.isPublished = isPublished;
 
   if (!form.publicURL) {
     form.publicURL = crypto.randomBytes(5).toString("hex");
