@@ -1,9 +1,11 @@
+import { json2csv } from "json-2-csv";
 import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { Response } from "../models/response.model.js";
 import { Form } from "../models/form.model.js";
 import { UserRolesEnum } from "../utils/constants.js";
+import { User } from "../models/user.model.js";
 
 const submitResponse = asyncHandler(async (req, res) => {
   //get formId from req.params
@@ -197,7 +199,7 @@ const deleteAllResponses = asyncHandler(async (req, res) => {
       "You do not have permission to perform this action",
     );
 
-  const allDeletedResponses = await Response.deleteMany({formId});
+  const allDeletedResponses = await Response.deleteMany({ formId });
 
   res
     .status(200)
@@ -211,7 +213,74 @@ const deleteAllResponses = asyncHandler(async (req, res) => {
 });
 
 //Experimental
-const exportResponses = asyncHandler(async (req, res) => {});
+const exportResponses = asyncHandler(async (req, res) => {
+  //get formId from req.params
+  //check if the user has role as paid else throw error
+  //fetch form and verify ownership
+  //fetch all responses using formId
+  //flattern all responses data for making CSV
+  //convert flatterned object to CSV using json2csv
+  //set HTTP headers to text/csv and "Content-Disposition" as attachment with filename
+  //send the CSV string as response using .send(csv)
+
+  const { formId } = req.params;
+
+  const userId = req.user.id;
+
+  const user = await User.findById(userId);
+
+  if (user.role !== UserRolesEnum.PAID)
+    throw new ApiError(
+      402,
+      "Exporting to CSV is a Pro feature. Please upgrade your plan.",
+    );
+
+  const form = await Form.findById(formId);
+
+  if (!form) throw new ApiError(404, "Form not found");
+
+  if (!form.ownerId.equals(userId))
+    throw new ApiError(
+      403,
+      "You do not have permission to export these responses",
+    );
+
+  const responses = await Response.find({ formId }).select("userId", "name");
+
+  if (!responses || responses.length === 0)
+    throw new ApiError(400, "No responses available to export");
+
+  const csvData = responses.map((resp) => {
+    const row = {
+      "Submission Date": resp.submittedAt.toISOString().split("T")[0], // YYYY-MM-DD
+      "Submission Time": resp.submittedAt
+        .toISOString()
+        .split("T")[1]
+        .split(".")[0], //HH:MM:SS
+      "Responder ID": resp.userId ? resp.userId.name : "Anonymous",
+    };
+
+    form.fields.forEach((field) => {
+      const answerValue = resp.answer.get(field.fieldKey);
+
+      row[field.label] = Array.isArray(answerValue)
+        ? answerValue.join("; ")
+        : answerValue || "";
+    });
+
+    return row;
+  });
+
+  const csv = json2csv(csvData);
+
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename=Form_${formId}_Export.csv`,
+  );
+
+  res.status(200).send(csv);
+});
 
 export {
   submitResponse,

@@ -28,6 +28,6 @@ router.route("/delete/:id").delete(isLoggedIn, deleteResponse);
 router.route("/deleteAll/:formId").delete(isLoggedIn, deleteAllResponses);
 
 //Experimental
-router.route("/export/:formId").get(exportResponses);
+router.route("/export/:formId").get(isLoggedIn, exportResponses);
 
 export default router;
