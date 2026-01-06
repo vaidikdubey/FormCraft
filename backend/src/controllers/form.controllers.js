@@ -1,9 +1,11 @@
 import { Form } from "../models/form.model.js";
+import { User } from "../models/user.model.js";
 import { Response } from "../models/response.model.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { ApiResponse } from "../utils/api-response.js";
 import crypto from "crypto";
+import { UserRolesEnum } from "../utils/constants.js";
 
 const getAllForms = asyncHandler(async (req, res) => {
   //get userId from req.user.id
@@ -79,6 +81,12 @@ const updateForm = asyncHandler(async (req, res) => {
   if (!id) throw new ApiError(404, "Form ID is required");
 
   const { title, description, fields, conditions, allowAnonymous } = req.body;
+  
+  const user = await User.findById(req.user.id);
+
+  if (req.body.allowEditing === true && user.role !== UserRolesEnum.PAID) {
+    throw new ApiError(402, "Response editing is a Pro feature. Please upgrage your plan.");
+  }
 
   const form = await Form.findById(id);
 

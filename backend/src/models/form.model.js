@@ -36,6 +36,11 @@ const formSchema = new Schema(
       unique: true,
       trim: true,
     },
+
+    allowEditing: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );
