@@ -57,7 +57,10 @@ The platform supports drag-and-drop form creation, basic conditional logic, publ
 
 * One-time payment integration using Razorpay (test mode)
 * Upgrade users to Paid status
-* Increased response limits after successful payment
+* What does a paid user get?
+  * Increased response limits
+  * Response editing
+  * Export responses to CSV
 
 ---
 
@@ -77,7 +80,7 @@ The platform supports drag-and-drop form creation, basic conditional logic, publ
 ### Paid User
 
 * All Form Creator capabilities
-* Higher response limits unlocked via payment
+* Higher response limits, response editing, and CSV export unlocked via payment
 
 ---
 
@@ -86,7 +89,13 @@ The platform supports drag-and-drop form creation, basic conditional logic, publ
 ### Frontend
 
 * React
+* Vite
 * React Router
+* React Hook Form
+* Zod
+* Zustand
+* Shadcn UI
+* Lucide React
 * Drag-and-drop library
 * Tailwind CSS
 
@@ -136,7 +145,6 @@ MongoDB is used due to its flexibility in handling dynamic and nested data struc
 
 * Advanced conditional logic
 * Form analytics and charts
-* CSV / Excel export of responses
 * Custom branding and white-labeling
 * Subscription-based billing
 * Third-party integrations (Zapier, CRM tools)
