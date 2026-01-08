@@ -1,15 +1,18 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 
 html,
 body,
 :root {
-  height: 100%;
+  height: 100vh;
 }
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-manrope: "Manrope", sans-serif;
+  --font-sans: var(--font-manrope);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -125,5 +128,10 @@ body,
   }
   body {
     @apply bg-background text-foreground;
+  }
+  body {
+    @apply font-manrope antialiased;
+
+    font-optical-sizing: auto;
   }
 }

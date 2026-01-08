@@ -1,0 +1,64 @@
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Sun, Moon } from "lucide-react";
+import { Outlet } from "react-router-dom";
+
+export const Layout = () => {
+    const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
+
+    useEffect(() => {
+        const root = window.document.documentElement;
+        theme === "dark"
+            ? root.classList.add("dark")
+            : root.classList.remove("dark");
+
+        localStorage.setItem("theme", theme);
+    }, [theme]);
+
+    const handleThemeChange = () => {
+        setTheme(theme === "light" ? "dark" : "light");
+    };
+
+    return (
+        <div
+            className={cn(
+                "min-h-screen w-full bg-background text-foreground transition-colors duration-300"
+            )}
+        >
+            <header>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleThemeChange}
+                    className={cn("absolute right-5 top-5")}
+                    aria-label="Toggle dark mode"
+                >
+                    <Sun
+                        className={cn(
+                            "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute",
+                            theme === "dark"
+                                ? "-rotate-90 scale-0"
+                                : "rotate-0 scale-100"
+                        )}
+                        aria-label="Light mode"
+                    />
+
+                    <Moon
+                        className={cn(
+                            "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute",
+                            theme === "dark"
+                                ? "rotate-0 scale-100"
+                                : "-rotate-90 scale-0"
+                        )}
+                        aria-label="Dark mode"
+                    />
+                </Button>
+            </header>
+
+            <main className="p-6">
+                <Outlet />
+            </main>
+        </div>
+    );
+};
