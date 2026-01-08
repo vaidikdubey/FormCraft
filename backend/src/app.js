@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middlewares/error.middleware.js";
-import { asyncHandler } from "./utils/async-handler.js";
 
 const app = express();
 

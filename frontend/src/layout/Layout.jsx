@@ -13,6 +13,13 @@ export const Layout = () => {
             ? root.classList.add("dark")
             : root.classList.remove("dark");
 
+        const favicon = document.querySelector('link[rel="icon"]');
+
+        if (favicon) {
+            favicon.href =
+                theme === "dark" ? "/faviconDark.png" : "/favicon.png";
+        }
+
         localStorage.setItem("theme", theme);
     }, [theme]);
 
@@ -23,42 +30,37 @@ export const Layout = () => {
     return (
         <div
             className={cn(
-                "min-h-screen w-full bg-background text-foreground transition-colors duration-300"
+                "h-full w-full bg-background text-foreground transition-colors duration-300 p-4"
             )}
         >
-            <header>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleThemeChange}
-                    className={cn("absolute right-5 top-5")}
-                    aria-label="Toggle dark mode"
-                >
-                    <Sun
-                        className={cn(
-                            "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute",
-                            theme === "dark"
-                                ? "-rotate-90 scale-0"
-                                : "rotate-0 scale-100"
-                        )}
-                        aria-label="Light mode"
-                    />
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleThemeChange}
+                className={cn("absolute right-5 top-5")}
+                aria-label="Toggle dark mode"
+            >
+                <Sun
+                    className={cn(
+                        "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute",
+                        theme === "dark"
+                            ? "-rotate-90 scale-0"
+                            : "rotate-0 scale-100"
+                    )}
+                    aria-label="Light mode"
+                />
 
-                    <Moon
-                        className={cn(
-                            "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute",
-                            theme === "dark"
-                                ? "rotate-0 scale-100"
-                                : "-rotate-90 scale-0"
-                        )}
-                        aria-label="Dark mode"
-                    />
-                </Button>
-            </header>
-
-            <main className="p-6">
-                <Outlet />
-            </main>
+                <Moon
+                    className={cn(
+                        "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute",
+                        theme === "dark"
+                            ? "rotate-0 scale-100"
+                            : "-rotate-90 scale-0"
+                    )}
+                    aria-label="Dark mode"
+                />
+            </Button>
+            <Outlet />
         </div>
     );
 };

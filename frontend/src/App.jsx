@@ -2,40 +2,66 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { LoginPage } from "./page/LoginPage";
 import { Layout } from "./layout/Layout";
+import { HomePage } from "./page/HomePage";
+import { useAuthStore } from "./store/useAuthStore";
+import { useEffect } from "react";
+import { Loader } from "lucide-react";
 
 function App() {
+    const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
+
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
+
+    if (isCheckingAuth && !authUser) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Loader className="size-10 animate-spin" />
+            </div>
+        );
+    }
+
     return (
-        <div className="flex flex-col items-center justify-center font-sans bg-background text-foreground h-full w-ful">
+        <>
             <Toaster
                 position="top-center"
                 reverseOrder={false}
                 toastOptions={{
+                    className:
+                        "dark:bg-card dark:text-foreground dark:border-border",
                     style: {
-                        background: "#0f172a",
-                        color: "#ffffff",
-                        borderRadius: "12px",
-                        border: "1px solid #334155",
-                        padding: "12px 16px",
-                        boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
-                    },
-                    success: {
-                        style: {
-                            background: "#059669",
-                        },
-                    },
-                    error: {
-                        style: {
-                            background: "#dc2626",
-                        },
+                        background: "var(--foreground)",
+                        color: "var(--background)",
                     },
                 }}
             />
             <Routes>
                 <Route element={<Layout />}>
-                    <Route path="/login" element={<LoginPage />} />
+                    <Route
+                        path="/login"
+                        element={
+                            !authUser ? (
+                                <LoginPage />
+                            ) : (
+                                <Navigate to={"/"} replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/"
+                        element={
+                            authUser ? (
+                                <HomePage />
+                            ) : (
+                                <Navigate to={"/login"} replace />
+                            )
+                        }
+                    />
                 </Route>
             </Routes>
-        </div>
+        </>
     );
 }
 
