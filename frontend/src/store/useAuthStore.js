@@ -68,5 +68,19 @@ export const useAuthStore = create((set) => ({
             console.error("Error logging out", error);
             toast.error("Error logging out");
         }
-    }
+    },
+
+    verifyEmail: async (token) => {
+        try {
+            const res = await axiosInstance.get(`/auth/verify/${token}`);
+
+            toast.success(res.message || "Email verified");
+
+            return { status: "success" };
+        } catch (error) {
+            console.error("Error verifying email", error)
+            toast.error("Error verifying email");
+            return { status: "error" };
+        }
+    },
 }));

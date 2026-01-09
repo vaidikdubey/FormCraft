@@ -55,7 +55,8 @@ const registerUser = asyncHandler(async (req, res) => {
     subject: "Verify your email",
     mailgenContent: emailVerificationMailgenContent(
       user.name,
-      `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.unHashedToken}`,
+      // `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.unHashedToken}`,
+      `${process.env.FRONTEND_URL}/verify/${temporaryToken.unHashedToken}`,
     ),
   };
 

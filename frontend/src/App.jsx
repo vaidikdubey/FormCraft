@@ -7,6 +7,7 @@ import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
 import { RegisterPage } from "./page/auth/RegisterPage";
+import { VerifyEmailPage } from "./page/auth/VerifyEmailPage";
 
 function App() {
     const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
@@ -70,6 +71,11 @@ function App() {
                                 <Navigate to={"/login"} replace />
                             )
                         }
+                    />
+
+                    <Route
+                        path="/verify/:token"
+                        element={<VerifyEmailPage />}
                     />
                 </Route>
             </Routes>
