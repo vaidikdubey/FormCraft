@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const passwordRule = z
+export const passwordRule = z
     .string()
     .min(8, "Password must be atleast 8 characters long")
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")

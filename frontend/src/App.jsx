@@ -9,6 +9,7 @@ import { Loader } from "lucide-react";
 import { RegisterPage } from "./page/auth/RegisterPage";
 import { VerifyEmailPage } from "./page/auth/VerifyEmailPage";
 import { ForgotPasswordPage } from "./page/auth/ForgotPasswordPage";
+import { ResetPasswordPage } from "./page/auth/ResetPasswordPage";
 
 function App() {
     const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
@@ -82,6 +83,11 @@ function App() {
                     <Route
                         path="/forgot-password"
                         element={<ForgotPasswordPage />}
+                    />
+
+                    <Route
+                        path="/reset-password/:token"
+                        element={<ResetPasswordPage />}
                     />
                 </Route>
             </Routes>
