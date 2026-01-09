@@ -10,6 +10,7 @@ import { RegisterPage } from "./page/auth/RegisterPage";
 import { VerifyEmailPage } from "./page/auth/VerifyEmailPage";
 import { ForgotPasswordPage } from "./page/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./page/auth/ResetPasswordPage";
+import { ChangePasswordPage } from "./page/auth/ChangePasswordPage";
 
 function App() {
     const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
@@ -73,6 +74,22 @@ function App() {
                                 <Navigate to={"/login"} replace />
                             )
                         }
+                    />
+
+                    {/* <Route
+                        path="/change-password"
+                        element={
+                            authUser ? (
+                                <ChangePasswordPage />
+                            ) : (
+                                <Navigate to={"/login"} replace />
+                            )
+                        }
+                    /> */}
+
+                    <Route
+                        path="/change-password"
+                        element={<ChangePasswordPage />}
                     />
 
                     <Route
