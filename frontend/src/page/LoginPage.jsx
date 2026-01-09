@@ -22,14 +22,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const LoginPage = () => {
-    const { login } = useAuthStore();
+    const { login, isLoggingIn } = useAuthStore();
 
     const [showPassword, setShowPassword] = useState(false);
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
@@ -60,7 +60,7 @@ export const LoginPage = () => {
                                 "hover:underline cursor-pointer hover:text-hover-text hover:font-bold"
                             )}
                         >
-                            <Link to={"/register"}>Sign Up</Link>
+                            <Link to={"/signup"}>Sign Up</Link>
                         </Button>
                     </CardAction>
                 </CardHeader>
@@ -100,7 +100,10 @@ export const LoginPage = () => {
                                     "flex justify-between items-center"
                                 )}
                             >
-                                <Label htmlFor="passwor" className={cn("my-3")}>
+                                <Label
+                                    htmlFor="password"
+                                    className={cn("my-3")}
+                                >
                                     Password
                                 </Label>
                                 <Link
@@ -154,10 +157,10 @@ export const LoginPage = () => {
                         <Button
                             type="submit"
                             className={cn("w-full cursor-pointer mt-6")}
-                            disable={isSubmitting}
+                            disable={isLoggingIn}
                         >
                             <Link>
-                                {isSubmitting ? "Please wait..." : "Login"}
+                                {isLoggingIn ? "Please wait..." : "Login"}
                             </Link>
                         </Button>
                     </CardFooter>

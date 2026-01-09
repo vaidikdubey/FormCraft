@@ -6,6 +6,7 @@ import { HomePage } from "./page/HomePage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
+import { RegisterPage } from "./page/RegisterPage";
 
 function App() {
     const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
@@ -43,6 +44,17 @@ function App() {
                         element={
                             !authUser ? (
                                 <LoginPage />
+                            ) : (
+                                <Navigate to={"/"} replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/signup"
+                        element={
+                            !authUser ? (
+                                <RegisterPage />
                             ) : (
                                 <Navigate to={"/"} replace />
                             )
