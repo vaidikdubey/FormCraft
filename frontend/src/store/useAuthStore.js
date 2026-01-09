@@ -52,8 +52,7 @@ export const useAuthStore = create((set) => ({
         } catch (error) {
             console.error("Error signing in", error);
             toast.error("Error signing in");
-        }
-        finally {
+        } finally {
             set({ isSigninUp: false });
         }
     },
@@ -62,7 +61,7 @@ export const useAuthStore = create((set) => ({
         try {
             await axiosInstance.get("/auth/logout");
             set({ authUser: null });
-    
+
             toast.success("Logout successful");
         } catch (error) {
             console.error("Error logging out", error);
@@ -78,9 +77,18 @@ export const useAuthStore = create((set) => ({
 
             return { status: "success" };
         } catch (error) {
-            console.error("Error verifying email", error)
+            console.error("Error verifying email", error);
             toast.error("Error verifying email");
             return { status: "error" };
+        }
+    },
+
+    forgotPassword: async (data) => {
+        try {
+            const res = await axiosInstance.post("/auth/forgot-password", data);
+        } catch (error) {
+            console.error("Error in forgot password", error);
+            toast.error("Error sending reset link");
         }
     },
 }));

@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { Loader } from "lucide-react";
 import { RegisterPage } from "./page/auth/RegisterPage";
 import { VerifyEmailPage } from "./page/auth/VerifyEmailPage";
+import { ForgotPasswordPage } from "./page/auth/ForgotPasswordPage";
 
 function App() {
     const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
@@ -76,6 +77,11 @@ function App() {
                     <Route
                         path="/verify/:token"
                         element={<VerifyEmailPage />}
+                    />
+
+                    <Route
+                        path="/forgot-password"
+                        element={<ForgotPasswordPage />}
                     />
                 </Route>
             </Routes>
