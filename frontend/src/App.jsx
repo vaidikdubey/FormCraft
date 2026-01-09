@@ -1,12 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { LoginPage } from "./page/LoginPage";
+import { LoginPage } from "./page/auth/LoginPage";
 import { Layout } from "./layout/Layout";
-import { HomePage } from "./page/HomePage";
+import { HomePage } from "./page/dashboard/HomePage";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
-import { RegisterPage } from "./page/RegisterPage";
+import { RegisterPage } from "./page/auth/RegisterPage";
 
 function App() {
     const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
