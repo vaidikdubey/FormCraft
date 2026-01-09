@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "@/lib/zod";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Link } from "react-router-dom";
+import { Eye, EyeClosed } from "lucide-react";
 
 //Shadcn components
 import { Button } from "@/components/ui/button";
@@ -18,8 +20,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
-import { Eye, EyeClosed } from "lucide-react";
 
 export const LoginPage = () => {
     const { login } = useAuthStore();
