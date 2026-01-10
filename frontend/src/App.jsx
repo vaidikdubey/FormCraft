@@ -11,21 +11,14 @@ import { VerifyEmailPage } from "./page/auth/VerifyEmailPage";
 import { ForgotPasswordPage } from "./page/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./page/auth/ResetPasswordPage";
 import { ChangePasswordPage } from "./page/auth/ChangePasswordPage";
+import { RequireAuth } from "./layout/RequireAuth";
 
 function App() {
-    const { authUser, isCheckingAuth, checkAuth } = useAuthStore();
+    const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
     useEffect(() => {
         checkAuth();
-    }, [checkAuth]);
-
-    if (isCheckingAuth && !authUser) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <Loader className="size-10 animate-spin" />
-            </div>
-        );
-    }
+    }, []);
 
     return (
         <>
@@ -43,69 +36,70 @@ function App() {
             />
             <Routes>
                 <Route element={<Layout />}>
-                    <Route
-                        path="/login"
-                        element={
-                            !authUser ? (
-                                <LoginPage />
-                            ) : (
-                                <Navigate to={"/"} replace />
-                            )
-                        }
-                    />
+                    <Route element={<RequireAuth />}>
+                        <Route
+                            path="/login"
+                            element={
+                                authUser ? (
+                                    <Navigate to={"/"} replace />
+                                ) : (
+                                    <LoginPage />
+                                )
+                            }
+                        />
 
-                    <Route
-                        path="/signup"
-                        element={
-                            !authUser ? (
-                                <RegisterPage />
-                            ) : (
-                                <Navigate to={"/"} replace />
-                            )
-                        }
-                    />
+                        <Route
+                            path="/signup"
+                            element={
+                                !authUser ? (
+                                    <RegisterPage />
+                                ) : (
+                                    <Navigate to={"/"} replace />
+                                )
+                            }
+                        />
 
-                    <Route
-                        path="/"
-                        element={
-                            authUser ? (
-                                <HomePage />
-                            ) : (
-                                <Navigate to={"/login"} replace />
-                            )
-                        }
-                    />
+                        <Route
+                            path="/"
+                            element={
+                                authUser ? (
+                                    <HomePage />
+                                ) : (
+                                    <Navigate to={"/login"} replace />
+                                )
+                            }
+                        />
 
-                    {/* <Route
-                        path="/change-password"
-                        element={
-                            authUser ? (
-                                <ChangePasswordPage />
-                            ) : (
-                                <Navigate to={"/login"} replace />
-                            )
-                        }
-                    /> */}
+                        <Route
+                            path="/change-password"
+                            element={
+                                isCheckingAuth || authUser === null ? (
+                                    <div className="flex items-center justify-center h-screen">
+                                        <Loader className="size-10 animate-spin" />
+                                    </div>
+                                ) : authUser ? (
+                                    <ChangePasswordPage />
+                                ) : (
+                                    <Navigate to="/login" replace />
+                                )
+                            }
+                        />
 
-                    <Route
-                        path="/change-password"
-                        element={<ChangePasswordPage />}
-                    />
+                        <Route
+                            path="/verify/:token"
+                            element={<VerifyEmailPage />}
+                        />
 
-                    <Route
-                        path="/verify/:token"
-                        element={<VerifyEmailPage />}
-                    />
+                        <Route
+                            path="/forgot-password"
+                            element={<ForgotPasswordPage />}
+                        />
 
-                    <Route
-                        path="/forgot-password"
-                        element={<ForgotPasswordPage />}
-                    />
-
-                    <Route
-                        path="/reset-password/:token"
-                        element={<ResetPasswordPage />}
-                    />
+                        <Route
+                            path="/reset-password/:token"
+                            element={<ResetPasswordPage />}
+                        />
+                    </Route>
                 </Route>
             </Routes>
         </>
