@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
-import React from "react";
-import { Plus, Search } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Plus } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link } from "react-router-dom";
 
@@ -17,12 +17,32 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useFormStore } from "@/store/useFormStore";
 
 export const Navbar = () => {
     const { authUser, logout } = useAuthStore();
 
     const handleLogout = () => {
         logout();
+    };
+
+    const [searchQuery, setSearchQuery] = useState("");
+    const [finalState, setFinalState] = useState("");
+
+    const { forms, isLoadingForms, fetchAllForms } = useFormStore();
+
+    useEffect(() => {
+        fetchAllForms();
+    }, []);
+
+    const filteredForms = forms?.filter((form) =>
+        form.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            setFinalState(searchQuery);
+        }
     };
 
     return (
@@ -34,12 +54,19 @@ export const Navbar = () => {
             <Button>
                 <Plus /> Create
             </Button>
-
-            <div
-                className={cn("flex justify-center items-center w-[50%] gap-2")}
-            >
-                <Input placeholder="Search FormCraft..." />
-                <Search size={"2rem"} />
+            <div>
+                <div
+                    className={cn(
+                        "flex justify-center items-center w-[50%] gap-2"
+                    )}
+                >
+                    <Input
+                        className={cn("pl-5")}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Type and press Enter to search..."
+                    />
+                </div>
             </div>
 
             <Button
