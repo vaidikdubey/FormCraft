@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     ArrowLeft,
     CheckCircle2,
     CircleX,
     Crown,
     TrendingUp,
+    Eye,
+    EyeClosed,
 } from "lucide-react";
 
 //Shadcn components
@@ -22,9 +24,43 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
 
 export const ProfilePages = () => {
-    const { authUser } = useAuthStore();
+    const { authUser, deleteUser, isDeletingUser } = useAuthStore();
+
+    const [password, setPassword] = useState("");
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const [isDialogueOpen, setIsDialogueOpen] = useState(false);
+
+    const navigate = useNavigate();
+
+    const handleDelete = async (e) => {
+        e.preventDefault();
+        const success = await deleteUser(password);
+
+        if (success) {
+            setIsDialogueOpen(false);
+            setPassword("");
+
+            setTimeout(() => {
+                navigate("/signup");
+            }, 1000);
+        }
+    };
 
     return (
         <div className={cn("h-full w-full flex justify-center items-center")}>
@@ -100,10 +136,84 @@ export const ProfilePages = () => {
                     <Button
                         asChild
                         type="submit"
-                        className="w-full cursor-pointer"
+                        className="w-full cursor-pointer font-semibold"
                     >
-                        <Link to={"/update"}>Update Profile</Link>
+                        <Link to={"/profile/update"}>Update Profile</Link>
                     </Button>
+
+                    {/* Delete user button */}
+                    <AlertDialog
+                        open={isDialogueOpen}
+                        onOpenChange={setIsDialogueOpen}
+                    >
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                variant="destructive"
+                                className="w-full font-semibold"
+                            >
+                                Delete User
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete your account and remove
+                                    your data from our servers.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+
+                            <div className="flex flex-col gap-4">
+                                <Label htmlFor="password">
+                                    Current Password:{" "}
+                                </Label>
+                                <div className="flex gap-5">
+                                    <Input
+                                        id="password"
+                                        type={
+                                            showPassword ? "text" : "password"
+                                        }
+                                        placeholder="••••••••"
+                                        value={password}
+                                        onChange={(e) =>
+                                            setPassword(e.target.value)
+                                        }
+                                        required
+                                    />
+                                    <Button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword(!showPassword)
+                                        }
+                                        className={cn("cursor-pointer")}
+                                    >
+                                        {showPassword ? (
+                                            <Eye className="h-5 w-5 text-base-content/40" />
+                                        ) : (
+                                            <EyeClosed className="h-5 w-5 text-base-content/40" />
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel disabled={isDeletingUser}>
+                                    Cancel
+                                </AlertDialogCancel>
+                                <Button
+                                    variant="destructive"
+                                    onClick={handleDelete}
+                                    disabled={isDeletingUser || !password}
+                                >
+                                    {isDeletingUser
+                                        ? "Deleting..."
+                                        : "Delete Account"}
+                                </Button>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </CardFooter>
             </Card>
         </div>

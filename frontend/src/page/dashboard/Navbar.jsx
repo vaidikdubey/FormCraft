@@ -247,9 +247,6 @@ export const Navbar = () => {
                         <DropdownMenuItem asChild>
                             <Link to={"/change-password"}>Change Password</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link to={"/reverify"}>Verify Email</Link>
-                        </DropdownMenuItem>
                         <DropdownMenuItem
                             className={cn("block md:hidden")}
                             onClick={handleThemeChange}

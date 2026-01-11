@@ -7,6 +7,8 @@ export const useAuthStore = create((set) => ({
     isSigninUp: false,
     isLoggingIn: false,
     isCheckingAuth: false,
+    isUpdatingProfile: false,
+    isDeletingUser: false,
 
     checkAuth: async () => {
         set({ isCheckingAuth: true });
@@ -96,8 +98,11 @@ export const useAuthStore = create((set) => ({
 
     resetPassword: async (data, token) => {
         try {
-            const res = await axiosInstance.post(`/auth/reset-password${token}`, data);
-            
+            const res = await axiosInstance.post(
+                `/auth/reset-password${token}`,
+                data
+            );
+
             toast.success(res.message || "Password reset successful");
 
             return { status: true };
@@ -118,5 +123,36 @@ export const useAuthStore = create((set) => ({
             console.error("Error changing password", error);
             toast.error("Error changing password");
         }
-    }
+    },
+
+    // updateProfile: async (data) => {
+    //     set({ isUpdatingProfile: true });
+
+    //     try {
+    //         const res = await axiosInstance.post("/auth//update-profile")
+    //     } catch (error) {
+
+    //     }
+    // },
+
+    deleteUser: async (password) => {
+        set({ isDeletingUser: true });
+
+        try {
+            await axiosInstance.delete("/auth/delete-user", {
+                data: { password },
+            });
+
+            toast.success("User deleted");
+
+            return true;
+        } catch (error) {
+            console.error("Error deleting user", error);
+            toast.error("Error deleting user");
+
+            return false;
+        } finally {
+            set({ isDeletingUser: false });
+        }
+    },
 }));
