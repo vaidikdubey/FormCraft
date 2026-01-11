@@ -5,7 +5,7 @@ import { passwordRule } from "@/lib/zod";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link } from "react-router-dom";
-import { Eye, EyeClosed } from "lucide-react";
+import { ArrowLeft, Eye, EyeClosed } from "lucide-react";
 import z from "zod";
 
 //Shadcn components
@@ -64,19 +64,23 @@ export const ChangePasswordPage = () => {
             <Card className={cn("w-full max-w-sm")}>
                 <CardHeader>
                     <CardTitle className={cn("text-2xl")}>
-                        Create a New Password
+                        Create New Password
                     </CardTitle>
                     <CardDescription className={cn("text-sm w-full")}>
                         Enter your new password below and confirm it.
                     </CardDescription>
                     <CardAction>
                         <Button
-                            variant="link"
+                            asChild
+                            variant="ghost"
                             className={cn(
-                                "hover:underline cursor-pointer hover:text-hover-text hover:font-bold"
+                                "cursor-pointer hover:text-hover-text hover:font-bold"
                             )}
                         >
-                            <Link to={"/"}>← Dashboard</Link>
+                            <Link to={"/"}>
+                                <ArrowLeft />
+                                Home
+                            </Link>
                         </Button>
                     </CardAction>
                 </CardHeader>

@@ -12,6 +12,7 @@ import { ForgotPasswordPage } from "./page/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./page/auth/ResetPasswordPage";
 import { ChangePasswordPage } from "./page/auth/ChangePasswordPage";
 import { RequireAuth } from "./layout/RequireAuth";
+import { ProfilePages } from "./page/dashboard/ProfilePages";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -98,6 +99,17 @@ function App() {
                         <Route
                             path="/reset-password/:token"
                             element={<ResetPasswordPage />}
+                        />
+
+                        <Route
+                            path="/me"
+                            element={
+                                authUser ? (
+                                    <ProfilePages />
+                                ) : (
+                                    <Navigate to={"/login"} replace />
+                                )
+                            }
                         />
                     </Route>
                 </Route>

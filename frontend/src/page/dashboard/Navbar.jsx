@@ -89,15 +89,20 @@ export const Navbar = () => {
             )}
         >
             <Button
+                asChild
                 className={cn(
                     "hidden md:flex md:items-center md:justify-center"
                 )}
             >
-                <Plus /> Create
+                <Link to={"/create"}>
+                    <Plus /> Create
+                </Link>
             </Button>
 
-            <Button className={cn("block md:hidden")}>
-                <Plus />
+            <Button asChild className={cn("block md:hidden")}>
+                <Link to={"/create"}>
+                    <Plus />
+                </Link>
             </Button>
 
             <div
