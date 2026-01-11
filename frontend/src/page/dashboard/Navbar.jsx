@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import React, { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, XCircle } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link } from "react-router-dom";
 
@@ -29,20 +29,25 @@ export const Navbar = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [finalState, setFinalState] = useState("");
 
-    const { forms, isLoadingForms, fetchAllForms } = useFormStore();
+    const { forms, fetchAllForms } = useFormStore();
 
     useEffect(() => {
         fetchAllForms();
     }, []);
 
     const filteredForms = forms?.filter((form) =>
-        form.title.toLowerCase().includes(searchQuery.toLowerCase())
+        form.title.toLowerCase().includes(finalState.toLowerCase())
     );
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
             setFinalState(searchQuery);
         }
+    };
+
+    const clearSearch = () => {
+        setSearchQuery("");
+        setFinalState("");
     };
 
     return (
@@ -54,19 +59,53 @@ export const Navbar = () => {
             <Button>
                 <Plus /> Create
             </Button>
-            <div>
-                <div
-                    className={cn(
-                        "flex justify-center items-center w-[50%] gap-2"
-                    )}
-                >
-                    <Input
-                        className={cn("pl-5")}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Type and press Enter to search..."
-                    />
-                </div>
+
+            <div
+                className={cn(
+                    "relative flex justify-center items-center w-[50%] gap-2"
+                )}
+            >
+                <Input
+                    className={cn("pl-5")}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Type and press Enter to search..."
+                />
+
+                {searchQuery && (
+                    <Button variant="ghost" onClick={clearSearch}>
+                        <XCircle className="h-4 w-4" />
+                    </Button>
+                )}
+
+                {finalState && (
+                    <div
+                        className={cn(
+                            "absolute top-full left-0 mt-2 w-full bg-popover/70 text-popover-foreground border rounded-md shadow-md z-100 overflow-hidden"
+                        )}
+                    >
+                        <div className={cn("p-2")}>
+                            {filteredForms?.length > 0 ? (
+                                filteredForms.map((form) => (
+                                    <Link
+                                        key={form._id}
+                                        to={`/getForm/${form._id}`}
+                                        className={cn(
+                                            "block px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm"
+                                        )}
+                                    >
+                                        {form.title}
+                                    </Link>
+                                ))
+                            ) : (
+                                <div className="px-4 py-2 text-sm text-muted-foreground">
+                                    No matching forms found...
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <Button
