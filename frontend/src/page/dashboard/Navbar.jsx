@@ -235,7 +235,11 @@ export const Navbar = () => {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="start">
-                    <DropdownMenuLabel>Account Center</DropdownMenuLabel>
+                    <DropdownMenuLabel
+                        className={cn("text-slate-700 dark:text-slate-400")}
+                    >
+                        Account Center
+                    </DropdownMenuLabel>
                     <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
                             <Link to={"/me"}>Profile</Link>
