@@ -37,12 +37,12 @@ export const Layout = () => {
                 variant="ghost"
                 size="icon"
                 onClick={handleThemeChange}
-                className={cn("absolute right-5 top-5 hidden md:block")}
+                className={cn("absolute right-8 top-9 hidden md:block")}
                 aria-label="Toggle dark mode"
             >
                 <Sun
                     className={cn(
-                        "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute",
+                        "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute inset-0 left-2.5 top-2.5",
                         theme === "dark"
                             ? "-rotate-90 scale-0"
                             : "rotate-0 scale-100"
@@ -52,7 +52,7 @@ export const Layout = () => {
 
                 <Moon
                     className={cn(
-                        "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute",
+                        "h-[1.2rem] w-[1.2rem] transition-all duration-300 ease-in-out absolute inset-0 left-2.5 top-2.5",
                         theme === "dark"
                             ? "rotate-0 scale-100"
                             : "-rotate-90 scale-0"
