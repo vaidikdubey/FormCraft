@@ -37,7 +37,7 @@ export const Layout = () => {
                 variant="ghost"
                 size="icon"
                 onClick={handleThemeChange}
-                className={cn("absolute right-5 top-5")}
+                className={cn("absolute right-5 top-5 hidden md:block")}
                 aria-label="Toggle dark mode"
             >
                 <Sun
