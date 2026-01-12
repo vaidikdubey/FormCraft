@@ -103,7 +103,7 @@ export const ForgotPasswordPage = () => {
                         <Button
                             type="submit"
                             className={cn("w-full cursor-pointer mt-6")}
-                            disable={isSubmitting}
+                            disabled={isSubmitting}
                         >
                             <Link>
                                 {isSubmitting

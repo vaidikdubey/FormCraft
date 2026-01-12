@@ -125,15 +125,24 @@ export const useAuthStore = create((set) => ({
         }
     },
 
-    // updateProfile: async (data) => {
-    //     set({ isUpdatingProfile: true });
+    updateProfile: async (data) => {
+        set({ isUpdatingProfile: true });
 
-    //     try {
-    //         const res = await axiosInstance.post("/auth//update-profile")
-    //     } catch (error) {
+        try {
+            const res = await axiosInstance.patch("/auth/update-profile", data);
 
-    //     }
-    // },
+            toast.success(res.message || "Profile updated");
+
+            return true;
+        } catch (error) {
+            console.error("Error updating profile", error);
+            toast.error("Error updating profile");
+
+            return false;
+        } finally {
+            set({ isUpdatingProfile: false });
+        }
+    },
 
     deleteUser: async (password) => {
         set({ isDeletingUser: true });

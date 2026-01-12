@@ -157,7 +157,7 @@ export const LoginPage = () => {
                         <Button
                             type="submit"
                             className={cn("w-full cursor-pointer mt-6")}
-                            disable={isLoggingIn}
+                            disabled={isLoggingIn}
                         >
                             <Link>
                                 {isLoggingIn ? "Please wait..." : "Login"}

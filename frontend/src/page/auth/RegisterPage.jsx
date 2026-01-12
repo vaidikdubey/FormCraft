@@ -218,7 +218,7 @@ export const RegisterPage = () => {
                         <Button
                             type="submit"
                             className={cn("w-full cursor-pointer mt-6")}
-                            disable={isSigninUp}
+                            disabled={isSigninUp}
                         >
                             <Link>
                                 {isSigninUp ? "Please wait..." : "Signup"}
