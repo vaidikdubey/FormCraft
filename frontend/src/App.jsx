@@ -14,6 +14,7 @@ import { ChangePasswordPage } from "./page/auth/ChangePasswordPage";
 import { RequireAuth } from "./layout/RequireAuth";
 import { ProfilePages } from "./page/dashboard/ProfilePages";
 import { UpdateProfilePage } from "./page/dashboard/UpdateProfilePage";
+import { CreateFormDialogue } from "./page/form/CreateFormDialogue";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -118,6 +119,17 @@ function App() {
                             element={
                                 authUser ? (
                                     <UpdateProfilePage />
+                                ) : (
+                                    <Navigate to={"/login"} replace />
+                                )
+                            }
+                        />
+
+                        <Route
+                            path="/create"
+                            element={
+                                authUser ? (
+                                    <CreateFormDialogue />
                                 ) : (
                                     <Navigate to={"/login"} replace />
                                 )

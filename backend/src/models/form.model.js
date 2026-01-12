@@ -2,6 +2,8 @@ import mongoose, { Schema } from "mongoose";
 import { formFieldSchema } from "./formField.schema.js";
 import { conditionalRuleSchema } from "./condition.schema.js";
 
+mongoose.set('autoIndex', true);
+
 const formSchema = new Schema(
   {
     title: {
@@ -33,6 +35,7 @@ const formSchema = new Schema(
 
     publicURL: {
       type: String,
+      sparse: true, //Ignore the unique constraint if the field is null
       unique: true,
       trim: true,
     },

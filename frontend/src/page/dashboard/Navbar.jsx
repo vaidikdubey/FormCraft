@@ -4,6 +4,7 @@ import { Plus, XCircle, Search } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link } from "react-router-dom";
 import { useFormStore } from "@/store/useFormStore";
+import { CreateFormDialogue } from "../form/CreateFormDialogue";
 
 //Shadcn components
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,11 +19,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-    HoverCard,
-    HoverCardContent,
-    HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import {
     Popover,
     PopoverContent,
@@ -88,23 +84,12 @@ export const Navbar = () => {
                 "md:w-lg lg:w-2xl xl:w-4xl sticky top-6 rounded-[999px] z-50 border-2 border-pink-300 px-5 py-2 flex justify-evenly items-center bg-white/2 backdrop-blur-[2px] before:content-[''] before:absolute before:inset-0 before:rounded-[999px] before:border-2 before:border-pink-300/10 before:-z-10 shadow-pink-500 shadow-2xs gap-2"
             )}
         >
-            <Button
-                asChild
-                className={cn(
-                    "hidden md:flex md:items-center md:justify-center"
-                )}
-            >
-                <Link to={"/create"}>
-                    <Plus /> Create
-                </Link>
-            </Button>
-
-            <Button asChild className={cn("block md:hidden")}>
-                <Link to={"/create"}>
-                    <Plus />
-                </Link>
-            </Button>
-
+            <CreateFormDialogue>
+                <Button className={cn("flex items-center justify-center")}>
+                    <Plus />{" "}
+                    <span className={cn("hidden md:block")}>Create</span>
+                </Button>
+            </CreateFormDialogue>
             <div
                 className={cn(
                     "hidden relative md:flex justify-center items-center lg:w-[50%] gap-2"
