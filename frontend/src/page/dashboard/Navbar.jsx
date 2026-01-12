@@ -4,7 +4,7 @@ import { Plus, XCircle, Search } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Link } from "react-router-dom";
 import { useFormStore } from "@/store/useFormStore";
-import { CreateFormDialogue } from "../form/CreateFormDialogue";
+import { CreateFormDialogue } from "../form/CreateFormDialog";
 
 //Shadcn components
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
