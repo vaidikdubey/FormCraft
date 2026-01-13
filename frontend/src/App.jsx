@@ -138,7 +138,7 @@ function App() {
                         />
 
                         <Route
-                            path="/update/:token"
+                            path="/update/:id"
                             element={
                                 authUser ? (
                                     <UpdateFormPage />

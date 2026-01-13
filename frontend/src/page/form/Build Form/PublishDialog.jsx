@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 export const PublishDialog = ({ open, onOpenChange, form }) => {
     // Ensure we fallback to _id if publicURL is not yet set
@@ -36,7 +37,7 @@ export const PublishDialog = ({ open, onOpenChange, form }) => {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="flex items-center space-x-2 py-4">
-                    <Input value={shareUrl} readOnly className="bg-gray-50" />
+                    <Input value={shareUrl} readOnly className="bg-gray-50 selection:text-hover-text" />
                     <Button
                         size="icon"
                         onClick={copyToClipboard}
@@ -49,10 +50,14 @@ export const PublishDialog = ({ open, onOpenChange, form }) => {
                     <Button
                         variant="secondary"
                         onClick={() => window.open(shareUrl, "_blank")}
+                        className={cn("cursor-pointer")}
                     >
                         <ExternalLink className="mr-2 h-4 w-4" /> View Form
                     </Button>
-                    <Button onClick={() => onOpenChange(false)}>Done</Button>
+                    <Button
+                        onClick={() => onOpenChange(false)}
+                        className={cn("cursor-pointer")}
+                    >Done</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

@@ -58,8 +58,8 @@ export const LogicPopover = ({
                     size="sm"
                     className={`gap-2 ${
                         myConditions.length > 0
-                            ? "text-purple-600 bg-purple-50"
-                            : "text-gray-500"
+                            ? "text-pink-500 bg-purple-50"
+                            : "text-gray-400"
                     }`}
                 >
                     <GitFork size={16} /> Logic{" "}
@@ -68,17 +68,16 @@ export const LogicPopover = ({
             </PopoverTrigger>
 
             <PopoverContent
-                className="w-100 p-0 shadow-xl border-purple-100"
+                className="w-100 p-0 shadow-xl "
                 align="start"
             >
-                <div className="p-3 border-b bg-gray-50/50 font-medium text-sm flex items-center gap-2">
-                    <GitFork size={14} className="text-purple-600" /> Logic
-                    Rules
+                <div className="p-3 border-b border-gray-400 bg-gray-50/50 font-medium text-sm flex items-center gap-2">
+                    <GitFork size={14} className="text-pink-500" /> Logic Rules
                 </div>
 
                 <ScrollArea className="max-h-50 p-3">
                     {myConditions.length === 0 ? (
-                        <p className="text-center text-xs text-gray-400 py-2 italic">
+                        <p className="text-center text-xs text-gray-200 py-2 italic">
                             No rules yet.
                         </p>
                     ) : (
@@ -86,7 +85,7 @@ export const LogicPopover = ({
                             {myConditions.map((cond, i) => (
                                 <div
                                     key={i}
-                                    className="flex items-center justify-between bg-white border rounded p-2 text-xs shadow-sm"
+                                    className="flex items-center justify-between bg-neutral-100 text-black border rounded p-2 text-xs shadow-sm"
                                 >
                                     <div className="flex flex-col">
                                         <span>
@@ -107,7 +106,7 @@ export const LogicPopover = ({
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-6 w-6 text-red-400"
+                                        className="h-6 w-6 text-red-600 hover:text-red-500"
                                         onClick={() => onRemoveCondition(cond)}
                                     >
                                         <X size={14} />
@@ -118,7 +117,7 @@ export const LogicPopover = ({
                     )}
                 </ScrollArea>
 
-                <div className="p-3 border-t bg-gray-50 space-y-3">
+                <div className="p-3 border-t border-neutral-300 bg-background text-foreground space-y-3">
                     <div className="grid grid-cols-2 gap-2">
                         <div className="space-y-1">
                             <Label className="text-[10px]">If Answer Is</Label>
@@ -197,7 +196,7 @@ export const LogicPopover = ({
                     </div>
                     <Button
                         onClick={handleAdd}
-                        className="w-full h-8 mt-1 gap-1 text-xs bg-purple-600 hover:bg-purple-700"
+                        className="w-full h-8 mt-1 gap-1 text-xs bg-pink-400 hover:bg-pink-600 text-foreground"
                     >
                         <Plus size={12} /> Add Rule
                     </Button>

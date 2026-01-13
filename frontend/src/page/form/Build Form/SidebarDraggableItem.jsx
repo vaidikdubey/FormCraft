@@ -42,11 +42,11 @@ export const SidebarDraggableItem = ({ type, label }) => {
             {...attributes}
             style={style}
             className={cn(
-                "flex flex-col items-center justify-center p-4 bg-white border rounded-lg cursor-grab hover:shadow-md hover:border-purple-200 transition-all active:cursor-grabbing"
+                "flex flex-col items-center justify-center p-4 bg-background border rounded-lg cursor-grab hover:shadow-md hover:border-pink-400 transition-all active:cursor-grabbing touch-none select-none"
             )}
         >
-            <IconComponent className="mb-2 text-gray-500" size={24} />
-            <span className="text-xs font-medium text-gray-700">{label}</span>
+            <IconComponent className="mb-2 text-foreground" size={24} />
+            <span className="text-xs font-medium text-foreground">{label}</span>
         </div>
     );
 };

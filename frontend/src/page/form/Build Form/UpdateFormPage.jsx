@@ -6,6 +6,7 @@ import {
     useSensor,
     useSensors,
     PointerSensor,
+    TouchSensor,
     closestCorners,
     useDroppable,
 } from "@dnd-kit/core";
@@ -15,18 +16,17 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { nanoid } from "nanoid";
-import { Share2, ArrowLeft, Save } from "lucide-react";
+import { Share2, ArrowLeft, Save, Loader2 } from "lucide-react";
+import { useDebounce } from "@/store/useDebounce";
+import { useFormStore } from "@/store/useFormStore";
+import { cn } from "@/lib/utils";
 
-// --- Custom Components ---
+//Custom Components
 import { SidebarDraggableItem } from "./SidebarDraggableItem";
 import { SortableFieldCard } from "./SortableFieldCard";
 import { PublishDialog } from "./PublishDialog";
 
-// --- Hooks & Utils ---
-import { useDebounce } from "@/store/useDebounce";
-import { useFormStore } from "@/store/useFormStore";
-
-// --- UI Components ---
+//Shadcn components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,7 +37,7 @@ const DroppableCanvas = ({ children, id }) => {
     const { setNodeRef } = useDroppable({ id });
 
     return (
-        <div ref={setNodeRef} className="min-h-50 w-full pb-20">
+        <div ref={setNodeRef} className="w-full pb-20">
             {children}
         </div>
     );
@@ -46,13 +46,10 @@ const DroppableCanvas = ({ children, id }) => {
 export const UpdateFormPage = () => {
     const { id } = useParams();
 
-    // --- ZUSTAND STORE ---
     const { form, isFetchingForm, fetchFormById, updateForm, isSavingForm } =
         useFormStore();
 
-    // --- LOCAL STATE ---
-    // We keep a local copy for immediate UI updates (drag & drop, typing)
-    // This prevents UI lag waiting for server responses
+    //For local updates -> To make UI smooth
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -68,23 +65,20 @@ export const UpdateFormPage = () => {
     const [lastSaved, setLastSaved] = useState(null);
     const [isPublishing, setIsPublishing] = useState(false);
 
-    // Debounce the entire form object (waits 2s after last change)
+    // Debounce the entire form object
     const debouncedFormData = useDebounce(formData, 2000);
 
-    // --- 1. FETCH FORM ON LOAD ---
     useEffect(() => {
         if (id) {
             fetchFormById(id);
         }
     }, [id, fetchFormById]);
 
-    // --- 2. SYNC STORE DATA TO LOCAL STATE ---
-    // When the store fetches the form, populate the local state
     useEffect(() => {
         if (form) {
             setFormData({
-                title: form.title || "",
-                description: form.description || "",
+                title: form?.title || "",
+                description: form?.description || "",
                 allowAnonymous: form.allowAnonymous || false,
                 fields: form.fields || [],
                 conditions: form.conditions || [],
@@ -93,7 +87,7 @@ export const UpdateFormPage = () => {
         }
     }, [form]);
 
-    // --- 3. AUTO-SAVE LOGIC ---
+    //AUTO-SAVE LOGIC
     useEffect(() => {
         // Only auto-save if we are not currently fetching and we have a title
         // Also check if formData actually differs from the store 'form' to avoid initial trigger
@@ -104,27 +98,25 @@ export const UpdateFormPage = () => {
     }, [debouncedFormData]);
 
     const saveFormToBackend = async (shouldPublish = false) => {
-        // Construct payload
         const payload = { ...formData, isPublished: shouldPublish };
 
         try {
-            // Call Zustand Action
-            // Note: Your store updateForm takes (data, id)
             await updateForm(payload, id);
 
             setLastSaved(new Date().toLocaleTimeString());
         } catch (error) {
             console.error("Save failed within component", error);
-            // Toast handling is already in your store, but you can add UI specific logic here
         }
     };
 
-    // --- 4. DND SENSORS ---
+    //Sensor for detecting drag movement
     const sensors = useSensors(
-        useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }), //Pixes before activation
+        useSensor(TouchSensor, {
+            activationConstraint: { delay: 250, tolerance: 5 },
+        })
     );
 
-    // --- 5. DRAG HANDLERS ---
     const handleDragStart = (event) => {
         setActiveDragItem(event.active.data.current);
     };
@@ -135,14 +127,14 @@ export const UpdateFormPage = () => {
 
         if (!over) return;
 
-        // A. New Item from Sidebar
+        //New Item from Sidebar
         if (active.data.current?.type === "SIDEBAR_ITEM") {
             const type = active.data.current.fieldType;
             const newField = {
                 fieldKey: nanoid(10),
                 type,
                 label: "Untitled Question",
-                placeholder: "Enter your answer",
+                placeholder: "Enter your response",
                 required: false,
                 options: ["Option 1", "Option 2"],
             };
@@ -157,7 +149,7 @@ export const UpdateFormPage = () => {
                         (f) => f.fieldKey === over.id
                     );
                     if (overIndex >= 0) {
-                        newFields.splice(overIndex + 1, 0, newField);
+                        newFields.splice(overIndex, 0, newField);
                     } else {
                         newFields.push(newField);
                     }
@@ -167,7 +159,7 @@ export const UpdateFormPage = () => {
             });
             setActiveFieldId(newField.fieldKey);
         }
-        // B. Reorder Existing Items
+        //Reorder Existing Items
         else if (active.id !== over.id) {
             setFormData((prev) => {
                 const oldIndex = prev.fields.findIndex(
@@ -188,7 +180,6 @@ export const UpdateFormPage = () => {
         }
     };
 
-    // --- 6. DATA HELPERS (LOCAL UPDATES) ---
     const updateField = (key, updates) => {
         setFormData((prev) => ({
             ...prev,
@@ -222,7 +213,6 @@ export const UpdateFormPage = () => {
         }));
     };
 
-    // --- 7. PUBLISH HANDLER ---
     const handlePublish = async () => {
         setIsPublishing(true);
         await saveFormToBackend(true); // true = Trigger Publish logic
@@ -230,14 +220,13 @@ export const UpdateFormPage = () => {
         setIsPublishing(false);
     };
 
-    // // Loading State
-    // if (isFetchingForm) {
-    //     return (
-    //         <div className="h-screen flex items-center justify-center">
-    //             <Loader2 className="animate-spin text-purple-600" />
-    //         </div>
-    //     );
-    // }
+    if (isFetchingForm) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader2 className="animate-spin text-pink-500" />
+            </div>
+        );
+    }
 
     return (
         <DndContext
@@ -246,9 +235,9 @@ export const UpdateFormPage = () => {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
         >
-            <div className="flex min-h-screen bg-gray-50 flex-col font-sans">
+            <div className="flex h-full bg-background text-foreground flex-col font-sans">
                 {/* HEADER */}
-                <header className="bg-white border-b px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm">
+                <header className="bg-background text-foreground border-b px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm">
                     <div className="flex items-center gap-4">
                         <Button
                             variant="ghost"
@@ -259,7 +248,7 @@ export const UpdateFormPage = () => {
                         </Button>
                         <div className="flex flex-col">
                             <Input
-                                className="font-bold text-lg border-transparent hover:border-input focus:border-ring h-7 w-75 p-0 shadow-none"
+                                className="font-bold text-xl border-transparent hover:border-pink-200 focus:border-r-pink-200 h-7 w-75 p-0 shadow-none"
                                 value={formData.title}
                                 onChange={(e) =>
                                     setFormData({
@@ -289,14 +278,15 @@ export const UpdateFormPage = () => {
                                         allowAnonymous: c,
                                     })
                                 }
+                                className={cn(
+                                    "data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-pink-500 border-2 border-transparent focus-visible:ring-pink-600"
+                                )}
                             />
-                            <Label className="text-sm cursor-pointer">
-                                Anonymous
-                            </Label>
+                            <Label className="text-sm">Anonymous</Label>
                         </div>
                         {/* Manual Save Button */}
                         <Button
-                            variant="outline"
+                            variant="default"
                             size="sm"
                             onClick={() => saveFormToBackend(false)}
                             disabled={isSavingForm}
@@ -307,7 +297,7 @@ export const UpdateFormPage = () => {
                         <Button
                             onClick={handlePublish}
                             disabled={isPublishing || isSavingForm}
-                            className="bg-purple-600 hover:bg-purple-700"
+                            className="bg-pink-500 hover:bg-pink-600"
                         >
                             {isPublishing ? (
                                 "Publishing..."
@@ -322,17 +312,22 @@ export const UpdateFormPage = () => {
                 {/* WORKSPACE */}
                 <div className="flex flex-1 overflow-hidden">
                     {/* Main Canvas (Scrollable) */}
-                    <main className="flex-1 overflow-y-auto p-8 flex justify-center bg-slate-50/50">
+                    <main className="flex-1 overflow-y-auto p-8 flex justify-center bg-background no-scrollbar">
                         <div className="w-full max-w-3xl space-y-4 pb-24">
                             {/* Title Card */}
-                            <div className="bg-white rounded-lg border-t-8 border-t-purple-600 shadow-sm p-8">
+                            <div className="bg-neutral-100 dark:bg-neutral-800/50 rounded-lg border-t-8 border-t-pink-500 shadow-sm p-8">
                                 <Input
                                     className="text-4xl font-bold border-none px-0 mb-2 focus-visible:ring-0"
                                     value={formData.title}
-                                    readOnly
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            title: e.target.value,
+                                        })
+                                    }
                                 />
                                 <Textarea
-                                    className="border-none px-0 resize-none focus-visible:ring-0 text-gray-500 text-lg min-h-12.5"
+                                    className="border-none px-0 resize-none focus-visible:ring-0 text-foreground/50 text-lg min-h-12.5"
                                     placeholder="Form description"
                                     value={formData.description}
                                     onChange={(e) =>
@@ -352,10 +347,10 @@ export const UpdateFormPage = () => {
                                 <DroppableCanvas id="canvas-drop-zone">
                                     <div className="space-y-4">
                                         {formData.fields.length === 0 && (
-                                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-white/50">
+                                            <div className="border-2 border-dashed border-gray-400 rounded-lg p-12 text-center bg-background">
                                                 <p className="text-gray-400">
                                                     Your form is empty. Drag
-                                                    fields from the right panel.
+                                                    fields from the panel.
                                                 </p>
                                             </div>
                                         )}
@@ -395,12 +390,12 @@ export const UpdateFormPage = () => {
                         </div>
                     </main>
 
-                    {/* Sidebar (Fixed) */}
-                    <aside className="w-72 bg-white border-l p-5 overflow-y-auto shadow-sm z-40">
-                        <h3 className="font-semibold mb-4 text-xs text-gray-500 uppercase tracking-wider">
-                            Drag Elements
+                    {/* Sidebar */}
+                    <aside className="hidden md:block w-fit bg-backgroun border-l-2 p-5 overflow-y-auto shadow-sm z-40">
+                        <h3 className="font-semibold mb-4 text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                            Field Types
                         </h3>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-4">
                             <SidebarDraggableItem
                                 type="TEXT"
                                 label="Short Text"
@@ -432,11 +427,13 @@ export const UpdateFormPage = () => {
                 </div>
             </div>
 
-            {/* Drag Overlay (Visual feedback) */}
+            {/* Drag Overlay */}
             <DragOverlay>
                 {activeDragItem ? (
-                    <div className="bg-white p-4 rounded shadow-xl border w-60 opacity-90 cursor-grabbing flex items-center gap-2">
-                        <span className="font-bold">Moving item...</span>
+                    <div className="bg-background p-4 rounded shadow-xl border w-60 opacity-90 cursor-grabbing flex items-center gap-2">
+                        <span className="font-bold">
+                            Release to add field...
+                        </span>
                     </div>
                 ) : null}
             </DragOverlay>

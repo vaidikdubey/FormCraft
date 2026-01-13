@@ -43,15 +43,15 @@ export const SortableFieldCard = ({
             <Card
                 className={`transition-all ${
                     isActive
-                        ? "border-l-4 border-l-purple-600 shadow-lg ring-1 ring-purple-100"
-                        : "hover:border-purple-300"
+                        ? "border-l-4 border-l-pink-500 shadow-lg ring-1 ring-neutral-300 dark:ring-neutral-600"
+                        : "hover:border-pink-300"
                 }`}
             >
                 <CardContent className="p-4 flex gap-3">
                     <div
                         {...attributes}
                         {...listeners}
-                        className="mt-2 cursor-grab text-gray-400 hover:text-gray-600 focus:outline-none"
+                        className="mt-2 cursor-grab text-gray-400 hover:text-gray-600 focus:outline-none touch-none"
                     >
                         <GripVertical size={20} />
                     </div>
@@ -177,7 +177,7 @@ export const SortableFieldCard = ({
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="text-purple-600 h-8 text-xs"
+                                            className="text-pink-400 h-8 text-xs"
                                             onClick={() =>
                                                 onUpdate({
                                                     options: [
@@ -195,8 +195,7 @@ export const SortableFieldCard = ({
                                             <PlusCircle
                                                 size={14}
                                                 className="mr-2"
-                                            />{" "}
-                                            Add Option
+                                            /> Add Option
                                         </Button>
                                     </div>
                                 )}
