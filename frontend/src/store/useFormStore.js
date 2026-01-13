@@ -2,6 +2,17 @@ import { create } from "zustand";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 
+const UI_BACKEND_MAP = {
+    TEXT: "text",
+    TEXTAREA: "text",
+    NUMBER: "text",
+    EMAIL: "email",
+    DROPDOWN: "dropdown",
+    RADIO: "dropdown",
+    CHECKBOX: "checkbox",
+    DATE: "date",
+};
+
 export const useFormStore = create((set) => ({
     forms: [],
     isLoadingForms: false,
@@ -36,8 +47,7 @@ export const useFormStore = create((set) => ({
         } catch (error) {
             console.error("Error fetching form", error);
             toast.error("Error fetching form");
-        }
-        finally {
+        } finally {
             set({ isFetchingForm: false });
         }
     },
@@ -66,14 +76,22 @@ export const useFormStore = create((set) => ({
     updateForm: async (data, id) => {
         set({ isSavingForm: true });
         try {
-            const res = await axiosInstance.patch(`/form/update/${id}`, data);
+            const formattedFields = data.fields.map((f) => ({
+                ...f,
+                type: UI_BACKEND_MAP[f.type] || f.type.toLowerCase(),
+            }));
+            const payload = { ...data, fields: formattedFields };
+
+            const res = await axiosInstance.patch(
+                `/form/update/${id}`,
+                payload
+            );
 
             set({ updateForm: res.data });
         } catch (error) {
             console.error("Error updating form", error);
-            toast.error("Error updating form")
-        }
-        finally {
+            toast.error("Error updating form");
+        } finally {
             set({ isSavingForm: false });
         }
     },
