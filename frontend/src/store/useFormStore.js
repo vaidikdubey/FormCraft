@@ -80,14 +80,27 @@ export const useFormStore = create((set) => ({
                 ...f,
                 type: UI_BACKEND_MAP[f.type] || f.type.toLowerCase(),
             }));
-            const payload = { ...data, fields: formattedFields };
+
+            const formattedConditions = (data.conditions || []).map((c) => ({
+                sourceFieldId: c.sourceFieldId,
+                targetFieldId: c.targetFieldId,
+                value: c.value,
+                operator: c.operator?.toLowerCase(),
+                actions: (c.actions || c.action)?.toLowerCase(),
+            }));
+
+            const payload = {
+                ...data,
+                fields: formattedFields,
+                conditions: formattedConditions,
+            };
 
             const res = await axiosInstance.patch(
                 `/form/update/${id}`,
                 payload
             );
 
-            set({ updateForm: res.data });
+            set({ updatedForm: res.data });
         } catch (error) {
             console.error("Error updating form", error);
             toast.error("Error updating form");

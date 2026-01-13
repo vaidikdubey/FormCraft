@@ -130,17 +130,21 @@ export const UpdateFormPage = () => {
         //New Item from Sidebar
         if (active.data.current?.type === "SIDEBAR_ITEM") {
             const type = active.data.current.fieldType;
-            const newField = {
-                fieldKey: nanoid(10),
-                type,
-                label: "Untitled Question",
-                placeholder: "Enter your response",
-                required: false,
-                options: ["Option 1", "Option 2"],
-            };
 
             setFormData((prev) => {
+                const newField = {
+                    fieldKey: nanoid(10),
+                    type,
+                    label: "Untitled Question",
+                    placeholder: "Enter your response",
+                    required: false,
+                    options: ["Option 1", "Option 2"],
+                };
+
                 const newFields = [...prev.fields];
+
+                if (newFields.some((f) => f.fieldKey === newField.fieldKey))
+                    return prev;
 
                 if (over.id === "canvas-drop-zone") {
                     newFields.push(newField);
@@ -155,9 +159,10 @@ export const UpdateFormPage = () => {
                     }
                 }
 
+                setTimeout(() => setActiveFieldId(newField.fieldKey), 0);
+
                 return { ...prev, fields: newFields };
             });
-            setActiveFieldId(newField.fieldKey);
         }
         //Reorder Existing Items
         else if (active.id !== over.id) {
