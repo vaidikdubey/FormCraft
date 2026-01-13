@@ -67,15 +67,12 @@ export const LogicPopover = ({
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent
-                className="w-100 p-0 shadow-xl "
-                align="start"
-            >
+            <PopoverContent className="w-fit p-0 shadow-xl " align="start">
                 <div className="p-3 border-b border-gray-400 bg-gray-50/50 font-medium text-sm flex items-center gap-2">
                     <GitFork size={14} className="text-pink-500" /> Logic Rules
                 </div>
 
-                <ScrollArea className="max-h-50 p-3">
+                <ScrollArea className="max-h-50 overflow-y-auto no-scrollbar w-fit md:w-full p-3">
                     {myConditions.length === 0 ? (
                         <p className="text-center text-xs text-gray-200 py-2 italic">
                             No rules yet.

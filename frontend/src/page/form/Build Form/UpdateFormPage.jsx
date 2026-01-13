@@ -235,9 +235,9 @@ export const UpdateFormPage = () => {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
         >
-            <div className="flex h-full bg-background text-foreground flex-col font-sans">
+            <div className="flex h-full w-full bg-background text-foreground flex-col font-sans max-w-7xl mx-auto">
                 {/* HEADER */}
-                <header className="bg-background text-foreground border-b px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm">
+                <header className="bg-background text-foreground border-b px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm flex-wrap gap-4 md:gap-0">
                     <div className="flex items-center gap-4">
                         <Button
                             variant="ghost"
@@ -248,7 +248,7 @@ export const UpdateFormPage = () => {
                         </Button>
                         <div className="flex flex-col">
                             <Input
-                                className="font-bold text-xl border-transparent hover:border-pink-200 focus:border-r-pink-200 h-7 w-75 p-0 shadow-none"
+                                className="font-bold text-xl border-transparent hover:border-pink-200 focus:border-r-pink-200 h-7 p-0 shadow-none mb-2"
                                 value={formData.title}
                                 onChange={(e) =>
                                     setFormData({
@@ -268,8 +268,8 @@ export const UpdateFormPage = () => {
                             </span>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 mr-2">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex items-center gap-2 md:mr-2">
                             <Switch
                                 checked={formData.allowAnonymous}
                                 onCheckedChange={(c) =>

@@ -47,7 +47,7 @@ export const SortableFieldCard = ({
                         : "hover:border-pink-300"
                 }`}
             >
-                <CardContent className="p-4 flex gap-3">
+                <CardContent className="md:p-4 flex flex-wrap gap-3">
                     <div
                         {...attributes}
                         {...listeners}
@@ -56,8 +56,8 @@ export const SortableFieldCard = ({
                         <GripVertical size={20} />
                     </div>
 
-                    <div className="flex-1 space-y-4">
-                        <div className="flex gap-3">
+                    <div className="flex-1 md:space-y-4">
+                        <div className="flex flex-col md:flex-row gap-3 mb-2">
                             <Input
                                 value={field.label}
                                 onChange={(e) =>
@@ -66,7 +66,7 @@ export const SortableFieldCard = ({
                                 className={`flex-1 ${
                                     isActive
                                         ? ""
-                                        : "border-transparent px-0 font-medium text-lg pointer-events-none"
+                                        : "border-transparent px-0 font-medium text-sm md:text-lg pointer-events-none w-fit"
                                 }`}
                                 placeholder="Question Label"
                             />
@@ -77,7 +77,7 @@ export const SortableFieldCard = ({
                                         onUpdate({ type: val })
                                     }
                                 >
-                                    <SelectTrigger className="w-35">
+                                    <SelectTrigger className="w-fit">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -200,7 +200,7 @@ export const SortableFieldCard = ({
                                     </div>
                                 )}
 
-                                <div className="pt-4 border-t flex justify-between items-center mt-2">
+                                <div className="pt-4 border-t flex flex-wrap gap-2 md:gap-0 justify-between items-center mt-2">
                                     <LogicPopover
                                         currentField={field}
                                         allFields={allFields}
