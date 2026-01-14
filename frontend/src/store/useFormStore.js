@@ -25,6 +25,7 @@ export const useFormStore = create((set) => ({
     isDeletingForm: false,
     isPublishing: false,
     publishedForm: null,
+    formPublicView: null,
 
     fetchAllForms: async () => {
         set({ isLoadingForms: true });
@@ -147,6 +148,17 @@ export const useFormStore = create((set) => ({
             return false;
         } finally {
             set({ isPublishing: false });
+        }
+    },
+
+    getPublicView: async (url) => {
+        try {
+            const res = await axiosInstance.get(`/form/public/${url}`);
+
+            set({ formPublicView: res.data.data });
+        } catch (error) {
+            console.error("Error fetching form", error);
+            toast.error("Error fetching form");
         }
     },
 }));

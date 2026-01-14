@@ -11,11 +11,12 @@ import { VerifyEmailPage } from "./page/auth/VerifyEmailPage";
 import { ForgotPasswordPage } from "./page/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./page/auth/ResetPasswordPage";
 import { ChangePasswordPage } from "./page/auth/ChangePasswordPage";
-import { RequireAuth } from "./layout/RequireAuth";
+import { ProtectedRoute } from "./layout/RequireAuth";
 import { ProfilePages } from "./page/dashboard/ProfilePages";
 import { UpdateProfilePage } from "./page/dashboard/UpdateProfilePage";
 import { CreateFormDialogue } from "./page/form/CreateFormDialog";
 import { UpdateFormPage } from "./page/form/Build Form/UpdateFormPage";
+import { PublicViewPage } from "./page/form/PublicViewPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -23,6 +24,14 @@ function App() {
     useEffect(() => {
         checkAuth();
     }, []);
+
+    if (isCheckingAuth) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader className="animate-spin text-pink-500" />
+            </div>
+        );
+    }
 
     return (
         <>
@@ -39,113 +48,97 @@ function App() {
                 }}
             />
             <Routes>
+                {/* Public Routes */}
                 <Route element={<Layout />}>
-                    <Route element={<RequireAuth />}>
-                        <Route
-                            path="/login"
-                            element={
-                                authUser ? (
-                                    <Navigate to={"/"} replace />
-                                ) : (
-                                    <LoginPage />
-                                )
-                            }
-                        />
+                    <Route
+                        path="/login"
+                        element={
+                            authUser ? (
+                                <Navigate
+                                    to={
+                                        window.history.state?.usr?.from
+                                            ?.pathname || "/"
+                                    }
+                                    replace
+                                />
+                            ) : (
+                                <LoginPage />
+                            )
+                        }
+                    />
 
-                        <Route
-                            path="/signup"
-                            element={
-                                !authUser ? (
-                                    <RegisterPage />
-                                ) : (
-                                    <Navigate to={"/"} replace />
-                                )
-                            }
-                        />
+                    <Route
+                        path="/signup"
+                        element={
+                            !authUser ? (
+                                <RegisterPage />
+                            ) : (
+                                <Navigate
+                                    to={
+                                        window.history.state?.usr?.from
+                                            ?.pathname || "/"
+                                    }
+                                    replace
+                                />
+                            )
+                        }
+                    />
 
-                        <Route
-                            path="/"
-                            element={
-                                authUser ? (
-                                    <HomePage />
-                                ) : (
-                                    <Navigate to={"/login"} replace />
-                                )
-                            }
-                        />
+                    <Route
+                        path="/verify/:token"
+                        element={<VerifyEmailPage />}
+                    />
 
+                    <Route
+                        path="/forgot-password"
+                        element={<ForgotPasswordPage />}
+                    />
+
+                    <Route
+                        path="/reset-password/:token"
+                        element={<ResetPasswordPage />}
+                    />
+
+                    <Route path="/form/:url" element={<PublicViewPage />} />
+
+                    {/* Protected Routes */}
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/" element={<HomePage />} />
+
+                        {/* <Route
+                        path="/change-password"
+                        element={
+                            isCheckingAuth || authUser === null ? (
+                                <div className="flex items-center justify-center h-screen">
+                                    <Loader className="size-10 animate-spin" />
+                                </div>
+                            ) : authUser ? (
+                                <ChangePasswordPage />
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    /> */}
                         <Route
                             path="/change-password"
-                            element={
-                                isCheckingAuth || authUser === null ? (
-                                    <div className="flex items-center justify-center h-screen">
-                                        <Loader className="size-10 animate-spin" />
-                                    </div>
-                                ) : authUser ? (
-                                    <ChangePasswordPage />
-                                ) : (
-                                    <Navigate to="/login" replace />
-                                )
-                            }
+                            element={<ChangePasswordPage />}
                         />
 
-                        <Route
-                            path="/verify/:token"
-                            element={<VerifyEmailPage />}
-                        />
-
-                        <Route
-                            path="/forgot-password"
-                            element={<ForgotPasswordPage />}
-                        />
-
-                        <Route
-                            path="/reset-password/:token"
-                            element={<ResetPasswordPage />}
-                        />
-
-                        <Route
-                            path="/me"
-                            element={
-                                authUser ? (
-                                    <ProfilePages />
-                                ) : (
-                                    <Navigate to={"/login"} replace />
-                                )
-                            }
-                        />
+                        <Route path="/me" element={<ProfilePages />} />
 
                         <Route
                             path="/profile/update"
-                            element={
-                                authUser ? (
-                                    <UpdateProfilePage />
-                                ) : (
-                                    <Navigate to={"/login"} replace />
-                                )
-                            }
+                            element={<UpdateProfilePage />}
                         />
 
                         <Route
                             path="/create"
-                            element={
-                                authUser ? (
-                                    <CreateFormDialogue />
-                                ) : (
-                                    <Navigate to={"/login"} replace />
-                                )
-                            }
+                            element={<CreateFormDialogue />}
                         />
 
                         <Route
                             path="/update/:id"
-                            element={
-                                authUser ? (
-                                    <UpdateFormPage />
-                                ) : (
-                                    <Navigate to={"/login"} replace />
-                                )
-                            }
+                            element={<UpdateFormPage />}
                         />
                     </Route>
                 </Route>
