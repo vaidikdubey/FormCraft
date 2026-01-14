@@ -22,6 +22,7 @@ export const useFormStore = create((set) => ({
     isFetchingForm: false,
     isSavingForm: false,
     updatedForm: null,
+    isDeletingForm: false,
 
     fetchAllForms: async () => {
         set({ isLoadingForms: true });
@@ -106,6 +107,21 @@ export const useFormStore = create((set) => ({
             toast.error("Error updating form");
         } finally {
             set({ isSavingForm: false });
+        }
+    },
+
+    deleteForm: async (id) => {
+        set({ isDeletingForm: true });
+
+        try {
+            await axiosInstance.delete(`/form/delete/${id}`);
+
+            toast.success("Form deleted");
+        } catch (error) {
+            console.error("Error deleting form", error);
+            toast.error("Error deleting form");
+        } finally {
+            set({ isDeletingForm: false });
         }
     },
 }));
