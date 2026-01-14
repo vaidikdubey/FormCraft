@@ -1,5 +1,9 @@
 import React from "react";
 import { Copy, CheckCircle, ExternalLink } from "lucide-react";
+import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
+
+//Shadcn components
 import {
     Dialog,
     DialogContent,
@@ -10,14 +14,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
 
-export const PublishDialog = ({ open, onOpenChange, form }) => {
-    // Ensure we fallback to _id if publicURL is not yet set
-    const shareUrl = `${window.location.origin}/forms/${
-        form.publicURL || form._id
-    }`;
+export const PublishDialog = ({ open, onOpenChange, publishedForm }) => {
+    const shareUrl = `${window.location.origin}/form/${publishedForm?.data?.publicURL}`;
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(shareUrl);
@@ -37,7 +36,11 @@ export const PublishDialog = ({ open, onOpenChange, form }) => {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="flex items-center space-x-2 py-4">
-                    <Input value={shareUrl} readOnly className="bg-gray-50 selection:text-hover-text" />
+                    <Input
+                        value={shareUrl}
+                        readOnly
+                        className="bg-gray-50 selection:text-hover-text"
+                    />
                     <Button
                         size="icon"
                         onClick={copyToClipboard}
@@ -57,7 +60,9 @@ export const PublishDialog = ({ open, onOpenChange, form }) => {
                     <Button
                         onClick={() => onOpenChange(false)}
                         className={cn("cursor-pointer")}
-                    >Done</Button>
+                    >
+                        Done
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

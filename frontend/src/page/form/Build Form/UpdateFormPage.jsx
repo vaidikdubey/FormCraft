@@ -52,8 +52,16 @@ const DroppableCanvas = ({ children, id }) => {
 export const UpdateFormPage = () => {
     const { id } = useParams();
 
-    const { form, isFetchingForm, fetchFormById, updateForm, isSavingForm } =
-        useFormStore();
+    const {
+        form,
+        isFetchingForm,
+        fetchFormById,
+        updateForm,
+        isSavingForm,
+        publishedForm,
+        publishForm,
+        isPublishing,
+    } = useFormStore();
 
     const { authUser } = useAuthStore();
 
@@ -64,7 +72,6 @@ export const UpdateFormPage = () => {
         allowAnonymous: false,
         fields: [],
         conditions: [],
-        isPublished: false,
         allowEditing: false,
     });
 
@@ -72,7 +79,7 @@ export const UpdateFormPage = () => {
     const [activeDragItem, setActiveDragItem] = useState(null);
     const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
     const [lastSaved, setLastSaved] = useState(null);
-    const [isPublishing, setIsPublishing] = useState(false);
+    const [publishStatus, setPublishStatus] = useState(false);
 
     // Debounce the entire form object
     const debouncedFormData = useDebounce(formData, 2000);
@@ -91,7 +98,6 @@ export const UpdateFormPage = () => {
                 allowAnonymous: form.allowAnonymous || false,
                 fields: form.fields || [],
                 conditions: form.conditions || [],
-                isPublished: form.isPublished || false,
                 allowEditing: form.allowEditing || false,
             });
         }
@@ -102,13 +108,13 @@ export const UpdateFormPage = () => {
         // Only auto-save if we are not currently fetching and we have a title
         // Also check if formData actually differs from the store 'form' to avoid initial trigger
         if (!isFetchingForm && formData.title && form) {
-            saveFormToBackend(false);
+            saveFormToBackend();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedFormData]);
 
-    const saveFormToBackend = async (shouldPublish = false) => {
-        const payload = { ...formData, isPublished: shouldPublish };
+    const saveFormToBackend = async () => {
+        const payload = { ...formData };
 
         try {
             await updateForm(payload, id);
@@ -228,11 +234,12 @@ export const UpdateFormPage = () => {
         }));
     };
 
-    const handlePublish = async () => {
-        setIsPublishing(true);
-        await saveFormToBackend(true); // true = Trigger Publish logic
-        setIsPublishDialogOpen(true);
-        setIsPublishing(false);
+    const handlePublish = async (checked) => {
+        const result = await publishForm({ isPublished: checked }, id);
+
+        if (result) setPublishStatus(checked);
+
+        if (checked) setIsPublishDialogOpen(true);
     };
 
     if (isFetchingForm) {
@@ -335,29 +342,33 @@ export const UpdateFormPage = () => {
                         <Button
                             variant="default"
                             size="sm"
-                            onClick={() => saveFormToBackend(false)}
+                            onClick={() => saveFormToBackend()}
                             disabled={isSavingForm}
                         >
                             <Save size={14} className="mr-2" /> Save
                         </Button>
 
-                        <div className="flex flex-col gap-1">
-                            <Button
-                                onClick={handlePublish}
-                                disabled={isPublishing || isSavingForm}
-                                className="bg-pink-500 hover:bg-pink-600"
-                            >
-                                {isPublishing ? (
-                                    "Publishing..."
-                                ) : (
-                                    <Share2 className="w-4 h-4 mr-2" />
+                        <div className="flex items-center gap-2 md:mr-2">
+                            <Switch
+                                checked={form?.isPublished || publishStatus}
+                                disabled={isPublishing}
+                                onCheckedChange={(c) => handlePublish(c)}
+                                className={cn(
+                                    "data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-pink-500 border-2 border-transparent focus-visible:ring-pink-600"
                                 )}
-                                Publish
-                            </Button>
-                            <p className="text-xs text-muted-foreground">
-                                *re-publish after editing
-                            </p>
+                            />
+                            <Label className="text-sm">Publish</Label>
                         </div>
+
+                        {(form?.isPublished || publishStatus) && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsPublishDialogOpen(true)}
+                            >
+                                <Share2 size={14} className="mr-2" /> Share Link
+                            </Button>
+                        )}
                     </div>
                 </header>
 
@@ -493,7 +504,7 @@ export const UpdateFormPage = () => {
             <PublishDialog
                 open={isPublishDialogOpen}
                 onOpenChange={setIsPublishDialogOpen}
-                form={formData}
+                publishedForm={publishedForm}
             />
         </DndContext>
     );

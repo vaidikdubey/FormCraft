@@ -23,6 +23,8 @@ export const useFormStore = create((set) => ({
     isSavingForm: false,
     updatedForm: null,
     isDeletingForm: false,
+    isPublishing: false,
+    publishedForm: null,
 
     fetchAllForms: async () => {
         set({ isLoadingForms: true });
@@ -122,6 +124,29 @@ export const useFormStore = create((set) => ({
             toast.error("Error deleting form");
         } finally {
             set({ isDeletingForm: false });
+        }
+    },
+
+    publishForm: async (data, id) => {
+        set({ isPublishing: true });
+
+        try {
+            const res = await axiosInstance.patch(`/form/publish/${id}`, data);
+
+            set({ publishedForm: res.data });
+
+            data.isPublished && toast.success("Form published");
+
+            !data.isPublished && toast.success("Form unpublished");
+
+            return true;
+        } catch (error) {
+            console.error("Error publishing form", error);
+            toast.error("Error publishing form");
+
+            return false;
+        } finally {
+            set({ isPublishing: false });
         }
     },
 }));

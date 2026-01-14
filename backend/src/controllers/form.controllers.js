@@ -80,15 +80,20 @@ const updateForm = asyncHandler(async (req, res) => {
 
   if (!id) throw new ApiError(404, "Form ID is required");
 
-  const { title, description, fields, conditions, allowAnonymous } = req.body;
+  const {
+    title,
+    description,
+    fields,
+    conditions,
+    allowAnonymous,
+  } = req.body;
 
   const user = await User.findById(req.user.id);
 
-  
   const form = await Form.findById(id);
-  
+
   if (!form) throw new ApiError(404, "Form not found");
-  
+
   const isTryingToUseEditing = req.body.allowEditing ?? form.allowEditing;
 
   if (isTryingToUseEditing === true && user.role !== UserRolesEnum.PAID) {
@@ -97,7 +102,7 @@ const updateForm = asyncHandler(async (req, res) => {
       "Response editing is a Pro feature. Please upgrage your plan.",
     );
   }
-  
+
   if (!form.ownerId.equals(req.user.id))
     throw new ApiError(
       403,
@@ -126,7 +131,6 @@ const updateForm = asyncHandler(async (req, res) => {
         fields: fields || form.fields,
         conditions: conditions || form.conditions,
         allowAnonymous: allowAnonymous ?? form.allowAnonymous,
-        isPublished: false,
         allowEditing: req.body.allowEditing ?? form.allowEditing,
       },
     },
