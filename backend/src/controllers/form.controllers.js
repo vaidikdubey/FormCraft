@@ -84,17 +84,20 @@ const updateForm = asyncHandler(async (req, res) => {
 
   const user = await User.findById(req.user.id);
 
-  if (req.body.allowEditing === true && user.role !== UserRolesEnum.PAID) {
+  
+  const form = await Form.findById(id);
+  
+  if (!form) throw new ApiError(404, "Form not found");
+  
+  const isTryingToUseEditing = req.body.allowEditing ?? form.allowEditing;
+
+  if (isTryingToUseEditing === true && user.role !== UserRolesEnum.PAID) {
     throw new ApiError(
       402,
       "Response editing is a Pro feature. Please upgrage your plan.",
     );
   }
-
-  const form = await Form.findById(id);
-
-  if (!form) throw new ApiError(404, "Form not found");
-
+  
   if (!form.ownerId.equals(req.user.id))
     throw new ApiError(
       403,
@@ -124,6 +127,7 @@ const updateForm = asyncHandler(async (req, res) => {
         conditions: conditions || form.conditions,
         allowAnonymous: allowAnonymous ?? form.allowAnonymous,
         isPublished: false,
+        allowEditing: req.body.allowEditing ?? form.allowEditing,
       },
     },
     { new: true, runValidators: true },

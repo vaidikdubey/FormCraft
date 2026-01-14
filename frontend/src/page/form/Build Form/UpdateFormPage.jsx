@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Children } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
     DndContext,
     DragOverlay,
@@ -16,10 +16,11 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { nanoid } from "nanoid";
-import { Share2, ArrowLeft, Save, Loader2 } from "lucide-react";
+import { Share2, ArrowLeft, Save, Loader2, Crown } from "lucide-react";
 import { useDebounce } from "@/store/useDebounce";
 import { useFormStore } from "@/store/useFormStore";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/useAuthStore";
 
 //Custom Components
 import { SidebarDraggableItem } from "./SidebarDraggableItem";
@@ -32,6 +33,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 const DroppableCanvas = ({ children, id }) => {
     const { setNodeRef } = useDroppable({ id });
@@ -49,6 +55,8 @@ export const UpdateFormPage = () => {
     const { form, isFetchingForm, fetchFormById, updateForm, isSavingForm } =
         useFormStore();
 
+    const { authUser } = useAuthStore();
+
     //For local updates -> To make UI smooth
     const [formData, setFormData] = useState({
         title: "",
@@ -57,6 +65,7 @@ export const UpdateFormPage = () => {
         fields: [],
         conditions: [],
         isPublished: false,
+        allowEditing: false,
     });
 
     const [activeFieldId, setActiveFieldId] = useState(null);
@@ -83,6 +92,7 @@ export const UpdateFormPage = () => {
                 fields: form.fields || [],
                 conditions: form.conditions || [],
                 isPublished: form.isPublished || false,
+                allowEditing: form.allowEditing || false,
             });
         }
     }, [form]);
@@ -289,6 +299,38 @@ export const UpdateFormPage = () => {
                             />
                             <Label className="text-sm">Anonymous</Label>
                         </div>
+                        {authUser?.data?.role === "paid" && (
+                            <div className="flex items-center gap-2 md:mr-2">
+                                <Switch
+                                    checked={formData.allowEditing}
+                                    onCheckedChange={(c) =>
+                                        setFormData({
+                                            ...formData,
+                                            allowEditing: c,
+                                        })
+                                    }
+                                    className={cn(
+                                        "data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-pink-500 border-2 border-transparent focus-visible:ring-pink-600"
+                                    )}
+                                />
+                                <Label className="text-sm">Edit Response</Label>
+                            </div>
+                        )}
+                        {authUser?.data?.role === "free" && (
+                            <HoverCard>
+                                <HoverCardTrigger asChild>
+                                    <Button asChild variant="outline">
+                                        <Link to={"/upgrade"}>
+                                            Edit Response{" "}
+                                            <Crown className="text-amber-400" />
+                                        </Link>
+                                    </Button>
+                                </HoverCardTrigger>
+                                <HoverCardContent className="w-fit">
+                                    Upgrade to unlock this feature!
+                                </HoverCardContent>
+                            </HoverCard>
+                        )}
                         {/* Manual Save Button */}
                         <Button
                             variant="default"
@@ -299,18 +341,23 @@ export const UpdateFormPage = () => {
                             <Save size={14} className="mr-2" /> Save
                         </Button>
 
-                        <Button
-                            onClick={handlePublish}
-                            disabled={isPublishing || isSavingForm}
-                            className="bg-pink-500 hover:bg-pink-600"
-                        >
-                            {isPublishing ? (
-                                "Publishing..."
-                            ) : (
-                                <Share2 className="w-4 h-4 mr-2" />
-                            )}
-                            Publish
-                        </Button>
+                        <div className="flex flex-col gap-1">
+                            <Button
+                                onClick={handlePublish}
+                                disabled={isPublishing || isSavingForm}
+                                className="bg-pink-500 hover:bg-pink-600"
+                            >
+                                {isPublishing ? (
+                                    "Publishing..."
+                                ) : (
+                                    <Share2 className="w-4 h-4 mr-2" />
+                                )}
+                                Publish
+                            </Button>
+                            <p className="text-xs text-muted-foreground">
+                                *re-publish after editing
+                            </p>
+                        </div>
                     </div>
                 </header>
 
