@@ -151,6 +151,7 @@ export const PublicViewPage = () => {
 
     useEffect(() => {
         getPublicView(url);
+        //eslint-disable-next-line
     }, [url]);
 
     const handleSubmit = () => {
