@@ -242,6 +242,10 @@ export const UpdateFormPage = () => {
         if (checked) setIsPublishDialogOpen(true);
     };
 
+    useEffect(() => {
+        setPublishStatus(form?.isPublished)
+    }, [form])
+
     if (isFetchingForm) {
         return (
             <div className="h-full flex items-center justify-center">
@@ -459,7 +463,10 @@ export const UpdateFormPage = () => {
                             Field Types
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
-                            <SidebarDraggableItem type="TEXT" label="Text" />
+                            <SidebarDraggableItem
+                                type="TEXT"
+                                label="Text"
+                            />
                             <SidebarDraggableItem type="EMAIL" label="Email" />
                             <SidebarDraggableItem
                                 type="DROPDOWN"

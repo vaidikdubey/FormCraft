@@ -34,8 +34,6 @@ export const LogicPopover = ({
         targetFieldId: "",
     });
 
-    console.log(conditions);
-
     const myConditions = conditions.filter(
         (c) => c.sourceFieldId === currentField.fieldKey
     );
@@ -44,7 +42,7 @@ export const LogicPopover = ({
     );
 
     const isSelectionField = ["dropdown", "checkbox"].includes(
-        currentField.type
+        currentField.type.toLowerCase()
     );
 
     const handleAdd = () => {
@@ -91,12 +89,15 @@ export const LogicPopover = ({
                                         <span>
                                             If answer{" "}
                                             <b>
-                                                {cond.operator === "not_equals" ? "NOT EQUALS" : cond.operator.toUpperCase()} "{cond.value}
-                                                "
+                                                {cond.operator} "{cond.value}"
                                             </b>
                                         </span>
                                         <span className="text-gray-500">
-                                            Then <b>{cond.action}</b> "
+                                            Then{" "}
+                                            <b>
+                                                {cond.actions} {cond.action}
+                                            </b>{" "}
+                                            "
                                             {
                                                 allFields.find(
                                                     (f) =>
@@ -124,7 +125,7 @@ export const LogicPopover = ({
                 <div className="p-3 border-t border-neutral-300 bg-background text-foreground space-y-3">
                     <div className="grid grid-cols-2 gap-2">
                         <div className="space-y-1">
-                            <Label className="text-[10px]">If Answer Is</Label>
+                            <Label className="text-[10px]">If Answer</Label>
                             {isSelectionField ? (
                                 <Select
                                     value={newRule.value}

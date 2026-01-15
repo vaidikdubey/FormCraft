@@ -105,20 +105,6 @@ function App() {
                     <Route element={<ProtectedRoute />}>
                         <Route path="/" element={<HomePage />} />
 
-                        {/* <Route
-                        path="/change-password"
-                        element={
-                            isCheckingAuth || authUser === null ? (
-                                <div className="flex items-center justify-center h-screen">
-                                    <Loader className="size-10 animate-spin" />
-                                </div>
-                            ) : authUser ? (
-                                <ChangePasswordPage />
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    /> */}
                         <Route
                             path="/change-password"
                             element={<ChangePasswordPage />}

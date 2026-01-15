@@ -1,11 +1,13 @@
 import { useFormStore } from "@/store/useFormStore";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 //Shadcn components
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
 export const PublicViewPage = () => {
@@ -25,11 +27,11 @@ export const PublicViewPage = () => {
         (cond) => cond.targetFieldId
     );
 
-    const handleInputChange = (fieldId, e, type) => {
+    const handleInputChange = (fieldId, e, type, option = undefined) => {
         let finalValue;
 
         if (type === "checkbox") {
-            finalValue = e.target.checked;
+            finalValue = [option];
         } else {
             finalValue = e.target.value;
         }
@@ -62,24 +64,37 @@ export const PublicViewPage = () => {
         const commonProps = {
             id: field.id,
             required: field.required || false,
-            className: "w-full p-2 border rounded-md",
+            className: cn("w-full p-2 border rounded-md"),
             placeholder: field.placeholder,
-            onChange: (e) => handleInputChange(field.id, e, field.type),
+            onChange: (e) => handleInputChange(field.fieldKey, e, field.type),
         };
 
         switch (field.type) {
             case "text":
-                return <input type="text" {...commonProps} />;
+                return <Input type="text" {...commonProps} />;
             case "email":
-                return <input type="email" {...commonProps} />;
+                return <Input type="email" {...commonProps} />;
             case "date":
-                return <input type="date" {...commonProps} />;
+                return <Input type="date" {...commonProps} />;
             case "dropdown":
                 return (
                     <select {...commonProps}>
-                        <option value="">Select an option...</option>
+                        <option
+                            value=""
+                            className={cn(
+                                "bg-white dark:bg-background text-foreground"
+                            )}
+                        >
+                            Select an option...
+                        </option>
                         {field.options.map((opt) => (
-                            <option key={opt} value={opt}>
+                            <option
+                                key={opt}
+                                value={opt}
+                                className={cn(
+                                    "bg-white dark:bg-background text-foreground"
+                                )}
+                            >
                                 {opt}
                             </option>
                         ))}
@@ -88,8 +103,33 @@ export const PublicViewPage = () => {
             case "checkbox":
                 return (
                     <div>
-                        <input type="checkbox" {...commonProps} />
-                        <label>{field.label}</label>
+                        {field.options?.map((opt) => {
+                            const selectedValue = responses[field?.fieldKey] ?? [];
+                            return (
+                                <div
+                                    key={opt}
+                                    className="flex items-center text-nowrap gap-3 my-4"
+                                >
+                                    <Checkbox
+                                        id={field.fieldKey}
+                                        checked={
+                                            selectedValue.includes(opt) ?? false
+                                        }
+                                        onCheckedChange={(e) =>
+                                            handleInputChange(
+                                                field.fieldKey,
+                                                e,
+                                                field.type,
+                                                opt
+                                            )
+                                        }
+                                    />
+                                    <Label htmlFor={field.fieldKey}>
+                                        {opt}
+                                    </Label>
+                                </div>
+                            );
+                        })}
                     </div>
                 );
 
@@ -102,51 +142,53 @@ export const PublicViewPage = () => {
         getPublicView(url);
     }, [url]);
 
-    console.log(formPublicView);
-
     return (
-        <div className="h-full w-full flex justify-center items-center bg-background text-foreground font-sans">
-            <div className="flex flex-1 overflow-hidden">
-                <main className="flex-1 overflow-y-auto p-8 flex justify-center bg-background no-scrollbar">
-                    <div className="w-full max-w-3xl space-y-4 pb-24">
-                        <div className="bg-neutral-100 dark:bg-neutral-800/50 rounded-lg border-t-8 border-t-pink-500 shadow-sm p-8">
-                            <h1 className="font-bold text-2xl mb-2">
-                                {formPublicView?.title}
-                            </h1>
-                            <p className="text-muted-foreground">
-                                {formPublicView?.description
-                                    ? formPublicView?.description
-                                    : "No form description provided by owner"}
-                            </p>
-                        </div>
-                        <div className="border border-gray-400 rounded-lg p-12 text-center bg-background">
-                            {formPublicView?.fields?.length > 0 ? (
-                                formPublicView?.fields?.map(
-                                    (f) =>
-                                        isTargetField(f) && (
-                                            <Card
-                                                key={f.fieldKey}
-                                                className="w-full my-5 border-l-4 border-l-pink-400"
-                                            >
-                                                <CardContent>
-                                                    <div className="flex-1 space-y-4">
-                                                        <div className="flex flex-col items-start gap-3 mb-2">
-                                                            <h3>{f.label}</h3>
-                                                            {renderField(f)}
+        <div className="flex h-full w-full bg-background text-foreground flex-col font-sans max-w-7xl mx-auto">
+            <div className="h-full w-full flex justify-center items-center bg-background text-foreground font-sans">
+                <div className="flex flex-1 overflow-hidden h-full">
+                    <main className="flex-1 overflow-y-auto p-8 flex justify-center bg-background no-scrollbar">
+                        <div className="w-full max-w-3xl space-y-4">
+                            <div className="bg-neutral-100 dark:bg-neutral-800/50 rounded-lg border-t-8 border-t-pink-500 shadow-sm px-5 py-10">
+                                <h1 className="font-bold text-2xl mb-2">
+                                    {formPublicView?.title}
+                                </h1>
+                                <p className="text-muted-foreground">
+                                    {formPublicView?.description
+                                        ? formPublicView?.description
+                                        : "No form description provided by owner"}
+                                </p>
+                            </div>
+                            <div className="rounded-lg text-center bg-background">
+                                {formPublicView?.fields?.length > 0 ? (
+                                    formPublicView?.fields?.map(
+                                        (f) =>
+                                            isTargetField(f) && (
+                                                <Card
+                                                    key={f.fieldKey}
+                                                    className="w-full my-5 border-l-4 border-l-pink-400"
+                                                >
+                                                    <CardContent>
+                                                        <div className="flex-1 space-y-4">
+                                                            <div className="flex flex-col items-start gap-3 mb-2">
+                                                                <h3>
+                                                                    {f.label}
+                                                                </h3>
+                                                                {renderField(f)}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        )
-                                )
-                            ) : (
-                                <div className="text-muted-foreground italic text-center">
-                                    No fields found...
-                                </div>
-                            )}
+                                                    </CardContent>
+                                                </Card>
+                                            )
+                                    )
+                                ) : (
+                                    <div className="w-full text-muted-foreground italic text-center border border-dashed border-gray-400 p-10 rounded-xl">
+                                        No fields found...
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                </main>
+                    </main>
+                </div>
             </div>
         </div>
     );
