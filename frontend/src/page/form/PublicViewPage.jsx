@@ -56,12 +56,19 @@ export const PublicViewPage = () => {
 
         const compareFn = operationFn[operator];
 
-        if (compareFn(responses[sourceFieldId], value)) {
+        const responseValue = !Array.isArray(responses[sourceFieldId])
+            ? responses[sourceFieldId]
+            : responses[sourceFieldId].toString();
+
+        if (compareFn(responseValue, value)) {
             return actions === "show" ? true : false;
         }
 
         return actions === "show" ? false : true;
     };
+
+    console.log("Public view: ", formPublicView);
+    console.log("Response: ", responses);
 
     const renderField = (field) => {
         const commonProps = {
@@ -148,7 +155,7 @@ export const PublicViewPage = () => {
 
     const handleSubmit = () => {
         submitForm(responses, formPublicView._id);
-    }
+    };
 
     return (
         <div className="flex h-full w-full bg-background text-foreground flex-col font-sans max-w-7xl mx-auto">
