@@ -2,6 +2,7 @@ import { useFormStore } from "@/store/useFormStore";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useResponseStore } from "@/store/useResponseStore";
 
 //Shadcn components
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
 export const PublicViewPage = () => {
+    const { isSubmittingForm, submitForm } = useResponseStore();
+
     const operationFn = {
         equals: (a, b) => a === b,
         not_equals: (a, b) => a !== b,
@@ -104,7 +107,8 @@ export const PublicViewPage = () => {
                 return (
                     <div>
                         {field.options?.map((opt) => {
-                            const selectedValue = responses[field?.fieldKey] ?? [];
+                            const selectedValue =
+                                responses[field?.fieldKey] ?? [];
                             return (
                                 <div
                                     key={opt}
@@ -141,6 +145,10 @@ export const PublicViewPage = () => {
     useEffect(() => {
         getPublicView(url);
     }, [url]);
+
+    const handleSubmit = () => {
+        submitForm(responses, formPublicView._id);
+    }
 
     return (
         <div className="flex h-full w-full bg-background text-foreground flex-col font-sans max-w-7xl mx-auto">
@@ -185,6 +193,16 @@ export const PublicViewPage = () => {
                                         No fields found...
                                     </div>
                                 )}
+                            </div>
+                            <div className="w-full text-center">
+                                <Button
+                                    variant="default"
+                                    className={cn("font-bold")}
+                                    onClick={handleSubmit}
+                                    disabled={isSubmittingForm}
+                                >
+                                    SUBMIT RESPONSE
+                                </Button>
                             </div>
                         </div>
                     </main>
