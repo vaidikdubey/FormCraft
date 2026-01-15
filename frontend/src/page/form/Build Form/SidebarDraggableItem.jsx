@@ -15,11 +15,8 @@ import {
 
 const iconMap = {
     TEXT: Type,
-    TEXTAREA: AlignLeft,
-    NUMBER: Hash,
     EMAIL: Mail,
     DROPDOWN: ChevronDown,
-    RADIO: CircleDot,
     CHECKBOX: CheckSquare,
     DATE: Calendar,
 };

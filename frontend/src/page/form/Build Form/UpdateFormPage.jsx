@@ -169,7 +169,7 @@ export const UpdateFormPage = () => {
                         (f) => f.fieldKey === over.id
                     );
                     if (overIndex >= 0) {
-                        newFields.splice(overIndex, 0, newField);
+                        newFields.splice(overIndex + 1, 0, newField);
                     } else {
                         newFields.push(newField);
                     }
@@ -350,7 +350,7 @@ export const UpdateFormPage = () => {
 
                         <div className="flex items-center gap-2 md:mr-2">
                             <Switch
-                                checked={form?.isPublished || publishStatus}
+                                checked={publishStatus}
                                 disabled={isPublishing}
                                 onCheckedChange={(c) => handlePublish(c)}
                                 className={cn(
@@ -459,30 +459,15 @@ export const UpdateFormPage = () => {
                             Field Types
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
-                            <SidebarDraggableItem
-                                type="TEXT"
-                                label="Short Text"
-                            />
-                            <SidebarDraggableItem
-                                type="TEXTAREA"
-                                label="Long Text"
-                            />
-                            <SidebarDraggableItem
-                                type="NUMBER"
-                                label="Number"
-                            />
+                            <SidebarDraggableItem type="TEXT" label="Text" />
                             <SidebarDraggableItem type="EMAIL" label="Email" />
                             <SidebarDraggableItem
                                 type="DROPDOWN"
                                 label="Dropdown"
                             />
                             <SidebarDraggableItem
-                                type="RADIO"
-                                label="Single Choice"
-                            />
-                            <SidebarDraggableItem
                                 type="CHECKBOX"
-                                label="Multiple"
+                                label="Checkbox"
                             />
                             <SidebarDraggableItem type="DATE" label="Date" />
                         </div>

@@ -4,11 +4,8 @@ import toast from "react-hot-toast";
 
 const UI_BACKEND_MAP = {
     TEXT: "text",
-    TEXTAREA: "text",
-    NUMBER: "text",
     EMAIL: "email",
     DROPDOWN: "dropdown",
-    RADIO: "dropdown",
     CHECKBOX: "checkbox",
     DATE: "date",
 };

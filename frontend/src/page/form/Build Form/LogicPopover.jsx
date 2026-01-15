@@ -28,11 +28,13 @@ export const LogicPopover = ({
 }) => {
     const [open, setOpen] = useState(false);
     const [newRule, setNewRule] = useState({
-        operator: "EQUALS",
+        operator: "equals",
         value: "",
         action: "SHOW",
         targetFieldId: "",
     });
+
+    console.log(conditions);
 
     const myConditions = conditions.filter(
         (c) => c.sourceFieldId === currentField.fieldKey
@@ -40,7 +42,8 @@ export const LogicPopover = ({
     const availableTargets = allFields.filter(
         (f) => f.fieldKey !== currentField.fieldKey
     );
-    const isSelectionField = ["DROPDOWN", "CHECKBOX", "RADIO"].includes(
+
+    const isSelectionField = ["dropdown", "checkbox"].includes(
         currentField.type
     );
 
@@ -86,7 +89,11 @@ export const LogicPopover = ({
                                 >
                                     <div className="flex flex-col">
                                         <span>
-                                            If answer is <b>"{cond.value}"</b>
+                                            If answer{" "}
+                                            <b>
+                                                {cond.operator === "not_equals" ? "NOT EQUALS" : cond.operator.toUpperCase()} "{cond.value}
+                                                "
+                                            </b>
                                         </span>
                                         <span className="text-gray-500">
                                             Then <b>{cond.action}</b> "
@@ -149,6 +156,30 @@ export const LogicPopover = ({
                                     }
                                 />
                             )}
+                        </div>
+                        <div className="space-y-1">
+                            <Label className="text-[10px]">Condtion</Label>
+                            <Select
+                                value={newRule.operator}
+                                onValueChange={(v) =>
+                                    setNewRule({ ...newRule, operator: v })
+                                }
+                            >
+                                <SelectTrigger className="h-8 text-xs">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="equals">
+                                        Equals
+                                    </SelectItem>
+                                    <SelectItem value="not_equals">
+                                        Not Equals
+                                    </SelectItem>
+                                    <SelectItem value="contains">
+                                        Contains
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div className="space-y-1">
                             <Label className="text-[10px]">Then</Label>

@@ -82,22 +82,13 @@ export const SortableFieldCard = ({
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="TEXT">
-                                            Short Text
-                                        </SelectItem>
-                                        <SelectItem value="TEXTAREA">
-                                            Long Text
-                                        </SelectItem>
-                                        <SelectItem value="NUMBER">
-                                            Number
+                                            Text
                                         </SelectItem>
                                         <SelectItem value="EMAIL">
                                             Email
                                         </SelectItem>
                                         <SelectItem value="DROPDOWN">
                                             Dropdown
-                                        </SelectItem>
-                                        <SelectItem value="RADIO">
-                                            Single Choice
                                         </SelectItem>
                                         <SelectItem value="CHECKBOX">
                                             Checkbox
@@ -195,7 +186,8 @@ export const SortableFieldCard = ({
                                             <PlusCircle
                                                 size={14}
                                                 className="mr-2"
-                                            /> Add Option
+                                            />{" "}
+                                            Add Option
                                         </Button>
                                     </div>
                                 )}
