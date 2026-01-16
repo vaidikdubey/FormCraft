@@ -10,7 +10,7 @@ app.use(
     origin: process.env.BASE_URL || process.env.FRONTEND_URL,
     credentials: true,
     methods: ["GET", "POST", "OPTIONS", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "Content-Disposition"],
   }),
 );
 app.use(express.json());

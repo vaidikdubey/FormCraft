@@ -24,6 +24,7 @@ export const useFormStore = create((set, get) => ({
     publishedForm: null,
     formPublicView: null,
     isCloningForm: false,
+    formStats: null,
 
     fetchAllForms: async () => {
         set({ isLoadingForms: true });
@@ -208,6 +209,17 @@ export const useFormStore = create((set, get) => ({
             return false;
         } finally {
             set({ isCloningForm: false });
+        }
+    },
+
+    getFormStats: async (id) => {
+        try {
+            const res = await axiosInstance.get(`/form/stats/${id}`);
+
+            set({ formStats: res.data.data });
+        } catch (error) {
+            console.error("Error getting stats", error);
+            toast.error("Error getting stats");
         }
     },
 }));
