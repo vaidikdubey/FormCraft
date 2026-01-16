@@ -17,6 +17,7 @@ import { UpdateProfilePage } from "./page/dashboard/UpdateProfilePage";
 import { CreateFormDialogue } from "./page/form/CreateFormDialog";
 import { UpdateFormPage } from "./page/form/Build Form/UpdateFormPage";
 import { PublicViewPage } from "./page/form/PublicViewPage";
+import { ThankYouPage } from "./page/form/ThankYouPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -100,6 +101,8 @@ function App() {
                     />
 
                     <Route path="/form/:url" element={<PublicViewPage />} />
+
+                    <Route path="/thankyou/:url" element={<ThankYouPage />} />
 
                     {/* Protected Routes */}
                     <Route element={<ProtectedRoute />}>

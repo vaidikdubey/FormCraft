@@ -1,6 +1,6 @@
 import { useFormStore } from "@/store/useFormStore";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useResponseStore } from "@/store/useResponseStore";
 
@@ -12,6 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
 export const PublicViewPage = () => {
+    const navigate = useNavigate()
+
     const { isSubmittingForm, submitForm } = useResponseStore();
 
     const operationFn = {
@@ -153,6 +155,8 @@ export const PublicViewPage = () => {
 
     const handleSubmit = () => {
         submitForm(responses, formPublicView._id);
+
+        navigate(`/thankyou/${url}`, { replace: true });
     };
 
     return (

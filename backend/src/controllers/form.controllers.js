@@ -270,7 +270,7 @@ const getFormPublicView = asyncHandler(async (req, res) => {
 
   const form = await Form.findOne({ publicURL: url, isPublished: true }).select(
     "title description fields conditions allowAnonymous",
-  );
+  ).populate("ownerId", "role");
 
   if (!form) throw new ApiError(404, "Form not found");
 
