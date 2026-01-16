@@ -17,11 +17,15 @@ export const useResponseStore = create((set) => ({
             set({ submittedForm: res.data });
 
             toast.success(res.msg || "Form submitted");
+
+            return true;
         } catch (error) {
             console.error("Error submitting response", error);
             toast.error(
                 error.response.data.message || "Error submitting response"
             );
+
+            return false;
         }
     },
 }));

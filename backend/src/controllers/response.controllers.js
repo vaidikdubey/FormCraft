@@ -47,7 +47,7 @@ const submitResponse = asyncHandler(async (req, res) => {
   if (!form.allowAnonymous && !req.user)
     throw new ApiError(
       400,
-      "Anonymous responses are not allowed for this form. Kindly login to submit your response.",
+      "Anonymous responses are not allowed for this form. Kindly login to FormCraft and submit your response.",
     );
 
   const response = await Response.create({

@@ -1,8 +1,9 @@
 import { useFormStore } from "@/store/useFormStore";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useResponseStore } from "@/store/useResponseStore";
+import { ExternalLink } from "lucide-react";
 
 //Shadcn components
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
 export const PublicViewPage = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const { isSubmittingForm, submitForm } = useResponseStore();
 
@@ -153,14 +154,35 @@ export const PublicViewPage = () => {
         //eslint-disable-next-line
     }, [url]);
 
-    const handleSubmit = () => {
-        submitForm(responses, formPublicView._id);
+    const handleSubmit = async () => {
+        const success = await submitForm(responses, formPublicView._id);
 
-        navigate(`/thankyou/${url}`, { replace: true });
+        if (success) navigate(`/thankyou/${url}`, { replace: true });
     };
 
     return (
         <div className="flex h-full w-full bg-background text-foreground flex-col font-sans max-w-7xl mx-auto">
+            <Button
+                asChild
+                variant="secondary"
+                className={cn(
+                    "hidden lg:block absolute left-8 top-9 bg-foreground text-background hover:text-hover-text font-semibold"
+                )}
+            >
+                <Link to={`${window.location.origin}/login`}>Login</Link>
+            </Button>
+            <Button
+                asChild
+                variant="outline"
+                size="icon-sm"
+                className={cn(
+                    "flex items-center jusify-center lg:hidden absolute top-3 left-2"
+                )}
+            >
+                <Link to={`${window.location.origin}/login`}>
+                    <ExternalLink />
+                </Link>
+            </Button>
             <div className="h-full w-full flex justify-center items-center bg-background text-foreground font-sans">
                 <div className="flex flex-1 overflow-hidden h-full">
                     <main className="flex-1 overflow-y-auto p-8 flex justify-center bg-background no-scrollbar">
