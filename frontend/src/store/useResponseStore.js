@@ -7,6 +7,8 @@ export const useResponseStore = create((set) => ({
     submittedForm: null,
     isDeletingResponse: false,
     isDeletingAllResponses: false,
+    isGettingAllResponses: false,
+    allResponses: [],
 
     submitForm: async (data, id) => {
         set({ isSubmittingForm: true });
@@ -28,6 +30,22 @@ export const useResponseStore = create((set) => ({
             );
 
             return false;
+        }
+    },
+
+    getAllResponses: async (formId) => {
+        set({ isGettingAllResponses: true });
+
+        try {
+            const res = await axiosInstance.get(`/response/getAllResponses/${formId}`);
+
+            set({ allResponses: res.data });
+        } catch (error) {
+            console.error("Error getting all responses", error);
+            toast.error("Error getting responses");
+        }
+        finally {
+            set({ isGettingAllResponses: false });
         }
     },
 

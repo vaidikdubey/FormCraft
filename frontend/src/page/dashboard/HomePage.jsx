@@ -6,7 +6,7 @@ import { useFormStore } from "@/store/useFormStore";
 import { timeAgo } from "@/utils/timeAgo";
 import { ExternalLink, Trash2, Edit, Copy } from "lucide-react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 
 //Shadcn components
@@ -103,8 +103,10 @@ export const HomePage = () => {
                                     className="border rounded-lg p-4 space-y-4"
                                 >
                                     <div className="flex items-center justify-between">
-                                        <div className="font-semibold text-lg">
-                                            {form.title}
+                                        <div className="font-semibold text-lg hover:underline hover:text-hover-text">
+                                            <Link to={`/responses/${form._id}`}>
+                                                {form.title}
+                                            </Link>
                                         </div>
                                         <div className="flex gap-1">
                                             <Button
@@ -346,9 +348,15 @@ export const HomePage = () => {
                                                 </Button>
                                             </TableCell>
                                             <TableCell
-                                                className={cn("font-semibold")}
+                                                className={cn(
+                                                    "font-semibold hover:underline hover:text-hover-text"
+                                                )}
                                             >
-                                                {form.title}
+                                                <Link
+                                                    to={`/responses/${form._id}`}
+                                                >
+                                                    {form.title}
+                                                </Link>
                                             </TableCell>
                                             <TableCell
                                                 className={cn("font-normal")}

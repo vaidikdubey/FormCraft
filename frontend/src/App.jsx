@@ -18,12 +18,14 @@ import { CreateFormDialogue } from "./page/form/CreateFormDialog";
 import { UpdateFormPage } from "./page/form/Build Form/UpdateFormPage";
 import { PublicViewPage } from "./page/form/responses/PublicViewPage";
 import { ThankYouPage } from "./page/form/responses/ThankYouPage";
+import { AllResponsesPage } from "./page/form/responses/AllResponsesPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
     useEffect(() => {
         checkAuth();
+        //eslint-disable-next-line
     }, []);
 
     if (isCheckingAuth) {
@@ -128,6 +130,11 @@ function App() {
                         <Route
                             path="/update/:id"
                             element={<UpdateFormPage />}
+                        />
+
+                        <Route
+                            path="/responses/:formId"
+                            element={<AllResponsesPage />}
                         />
                     </Route>
                 </Route>
