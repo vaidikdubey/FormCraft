@@ -10,7 +10,7 @@ const UI_BACKEND_MAP = {
     DATE: "date",
 };
 
-export const useFormStore = create((set) => ({
+export const useFormStore = create((set, get) => ({
     forms: [],
     isLoadingForms: false,
     isCreatingForm: false,
@@ -23,6 +23,7 @@ export const useFormStore = create((set) => ({
     isPublishing: false,
     publishedForm: null,
     formPublicView: null,
+    isCloningForm: false,
 
     fetchAllForms: async () => {
         set({ isLoadingForms: true });
@@ -75,34 +76,48 @@ export const useFormStore = create((set) => ({
     },
 
     updateForm: async (data, id) => {
+        const previousForm = get().forms;
+
+        set((state) => ({
+            forms: state.forms.map((f) =>
+                f._id === id ? { ...f, ...data } : f
+            ),
+        }));
+
         set({ isSavingForm: true });
         try {
-            const formattedFields = data.fields.map((f) => ({
-                ...f,
-                type: UI_BACKEND_MAP[f.type] || f.type.toLowerCase(),
-            }));
+            const payload = { ...data };
 
-            const formattedConditions = (data.conditions || []).map((c) => ({
-                sourceFieldId: c.sourceFieldId,
-                targetFieldId: c.targetFieldId,
-                value: c.value,
-                operator: c.operator?.toLowerCase(),
-                actions: (c.actions || c.action)?.toLowerCase(),
-            }));
+            if (data.fields && Array.isArray(data.fields)) {
+                payload.fields = data.fields.map((f) => ({
+                    ...f,
+                    type: UI_BACKEND_MAP[f.type] || f.type.toLowerCase(),
+                }));
+            }
 
-            const payload = {
-                ...data,
-                fields: formattedFields,
-                conditions: formattedConditions,
-            };
+            if (data.conditions && Array.isArray(data.conditions)) {
+                payload.conditions = data.conditions.map((c) => ({
+                    sourceFieldId: c.sourceFieldId,
+                    targetFieldId: c.targetFieldId,
+                    value: c.value,
+                    operator: c.operator?.toLowerCase(),
+                    actions: (c.actions || c.action)?.toLowerCase(),
+                }));
+            }
 
             const res = await axiosInstance.patch(
                 `/form/update/${id}`,
                 payload
             );
 
-            set({ updatedForm: res.data });
+            set((state) => ({
+                updatedForm: res.data,
+                forms: state.forms.map((f) =>
+                    f._id === id ? { ...f, ...res.data } : f
+                ),
+            }));
         } catch (error) {
+            set({ forms: previousForm });
             console.error("Error updating form", error);
             toast.error("Error updating form");
         } finally {
@@ -128,6 +143,14 @@ export const useFormStore = create((set) => ({
     publishForm: async (data, id) => {
         set({ isPublishing: true });
 
+        const previousForm = get().forms;
+
+        set((state) => ({
+            forms: state.forms.map((f) =>
+                f._id === id ? { ...f, ...data } : f
+            ),
+        }));
+
         try {
             const res = await axiosInstance.patch(`/form/publish/${id}`, data);
 
@@ -137,8 +160,16 @@ export const useFormStore = create((set) => ({
 
             !data.isPublished && toast.success("Form unpublished");
 
+            set((state) => ({
+                updatedForm: res.data,
+                forms: state.forms.map((f) =>
+                    f._id === id ? { ...f, ...res.data } : f
+                ),
+            }));
+
             return true;
         } catch (error) {
+            set({ forms: previousForm });
             console.error("Error publishing form", error);
             toast.error("Error publishing form");
 
@@ -156,6 +187,23 @@ export const useFormStore = create((set) => ({
         } catch (error) {
             console.error("Error fetching form", error);
             toast.error("Error fetching form");
+        }
+    },
+
+    cloneForm: async (id) => {
+        set({ isCloningForm: true });
+
+        try {
+            const res = await axiosInstance.get(`/form/clone/${id}`);
+
+            return res.data;
+        } catch (error) {
+            console.error("Error cloning form", error);
+            toast.error("Error cloning form");
+
+            return false;
+        } finally {
+            set({ isCloningForm: false });
         }
     },
 }));

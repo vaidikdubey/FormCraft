@@ -67,9 +67,6 @@ export const PublicViewPage = () => {
         return actions === "show" ? false : true;
     };
 
-    console.log("Public view: ", formPublicView);
-    console.log("Response: ", responses);
-
     const renderField = (field) => {
         const commonProps = {
             id: field.id,

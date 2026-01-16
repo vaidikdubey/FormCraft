@@ -20,7 +20,7 @@ export const PublishDialog = ({ open, onOpenChange, publishedForm }) => {
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(shareUrl);
-        toast.success("URL Copied to clipboard");
+        toast.success("Form URL Copied");
     };
 
     return (

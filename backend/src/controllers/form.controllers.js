@@ -80,13 +80,7 @@ const updateForm = asyncHandler(async (req, res) => {
 
   if (!id) throw new ApiError(404, "Form ID is required");
 
-  const {
-    title,
-    description,
-    fields,
-    conditions,
-    allowAnonymous,
-  } = req.body;
+  const { title, description, fields, conditions, allowAnonymous } = req.body;
 
   const user = await User.findById(req.user.id);
 
@@ -324,7 +318,7 @@ const cloneForm = asyncHandler(async (req, res) => {
   }
 
   if (formObject.conditions) {
-    formObject.conditions = formObject.fields.map((condition) => {
+    formObject.conditions = formObject.conditions.map((condition) => {
       const { _id, ...rest } = condition;
       return rest;
     });
