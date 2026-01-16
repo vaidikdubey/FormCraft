@@ -270,7 +270,7 @@ export const HomePage = () => {
                         </div>
 
                         {/* Desktop table - hidden on mobile */}
-                        <div className="hidden lg:block h-full w-full max-w-6xl my-15 overflow-auto no-scrollbar border-8 rounded-xl">
+                        <div className="hidden lg:block h-full max-w-4xl xl:max-w-6xl my-15 overflow-auto no-scrollbar border-8 rounded-xl">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
