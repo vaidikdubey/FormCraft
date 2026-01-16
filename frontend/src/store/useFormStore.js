@@ -132,9 +132,13 @@ export const useFormStore = create((set, get) => ({
             await axiosInstance.delete(`/form/delete/${id}`);
 
             toast.success("Form deleted");
+
+            return true;
         } catch (error) {
             console.error("Error deleting form", error);
             toast.error("Error deleting form");
+
+            return false;
         } finally {
             set({ isDeletingForm: false });
         }

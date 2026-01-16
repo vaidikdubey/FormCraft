@@ -82,7 +82,7 @@ export const ProfilePages = () => {
                     </CardAction>
                 </CardHeader>
                 <CardContent>
-                    <Label className={cn("mb-4")}>
+                     <Label className={cn("mb-4")}>
                         Name: {authUser?.data?.name}
                     </Label>
 
