@@ -16,8 +16,8 @@ import { ProfilePages } from "./page/dashboard/ProfilePages";
 import { UpdateProfilePage } from "./page/dashboard/UpdateProfilePage";
 import { CreateFormDialogue } from "./page/form/CreateFormDialog";
 import { UpdateFormPage } from "./page/form/Build Form/UpdateFormPage";
-import { PublicViewPage } from "./page/form/PublicViewPage";
-import { ThankYouPage } from "./page/form/ThankYouPage";
+import { PublicViewPage } from "./page/form/responses/PublicViewPage";
+import { ThankYouPage } from "./page/form/responses/ThankYouPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
