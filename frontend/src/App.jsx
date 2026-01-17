@@ -29,7 +29,7 @@ function App() {
     useEffect(() => {
         checkAuth();
         //eslint-disable-next-line
-    }, []);
+    }, [checkAuth]);
 
     if (isCheckingAuth) {
         return (
@@ -58,23 +58,23 @@ function App() {
                 <Route element={<Layout />}>
                     <Route
                         path="/login"
-                        element={
-                            authUser ? (
-                                <Navigate to={"/"} replace />
-                            ) : (
-                                <LoginPage />
-                            )
+                        element={<LoginPage />
+                            // authUser ? (
+                            //     <Navigate to={"/"} replace />
+                            // ) : (
+                                
+                            // )
                         }
                     />
 
                     <Route
                         path="/signup"
-                        element={
-                            !authUser ? (
-                                <RegisterPage />
-                            ) : (
-                                <Navigate to={"/"} replace />
-                            )
+                        element={<RegisterPage />
+                            // !authUser ? (
+                                
+                            // ) : (
+                            //     <Navigate to={"/"} replace />
+                            // )
                         }
                     />
 
