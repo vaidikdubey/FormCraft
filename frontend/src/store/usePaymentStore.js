@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "@/lib/axios";
+import { useAuthStore } from "./useAuthStore";
 
 export const usePaymentStore = create((set) => ({
     isCreatingOrder: false,
@@ -33,6 +34,10 @@ export const usePaymentStore = create((set) => ({
             const res = await axiosInstance.post("/payment/verify", response);
 
             set({ verifyPaymentData: res.data });
+
+            const authStore = useAuthStore.getState();
+            await authStore.checkAuth(); //Refetch user to update status to paid.
+
             toast.success(res.message || "Payment verified! PRO activated🎉");
         } catch (error) {
             console.error("Error verifying payment", error);
