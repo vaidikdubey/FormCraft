@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "@/lib/zod";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Eye, EyeClosed } from "lucide-react";
 
 //Shadcn components
@@ -22,8 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const LoginPage = () => {
-    const navigate = useNavigate();
-
     const { login, isLoggingIn } = useAuthStore();
 
     const [showPassword, setShowPassword] = useState(false);
@@ -40,10 +38,8 @@ export const LoginPage = () => {
         },
     });
 
-    const onSubmit = async (data) => {
-        const success = await login(data);
-
-        if (success) setTimeout(() => navigate("/", { replace: true }), 1000);
+    const onSubmit = (data) => {
+        login(data);
     };
 
     return (

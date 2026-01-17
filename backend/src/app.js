@@ -7,9 +7,9 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.BASE_URL || process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL ?? process.env.BASE_URL,
     credentials: true,
-    methods: ["GET", "POST", "OPTIONS", "DELETE"],
+    methods: ["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
     allowedHeaders: ["Content-Type", "Authorization", "Content-Disposition"],
   }),
 );
