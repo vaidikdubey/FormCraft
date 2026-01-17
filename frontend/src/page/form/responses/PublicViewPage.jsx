@@ -73,7 +73,6 @@ export const PublicViewPage = () => {
     const renderField = (field) => {
         const commonProps = {
             id: field.id,
-            required: field.required || false,
             className: cn("w-full p-2 border rounded-md"),
             placeholder: field.placeholder,
             onChange: (e) => handleInputChange(field.fieldKey, e, field.type),
@@ -81,14 +80,32 @@ export const PublicViewPage = () => {
 
         switch (field.type) {
             case "text":
-                return <Input type="text" {...commonProps} />;
+                return (
+                    <Input
+                        type="text"
+                        required={field.required}
+                        {...commonProps}
+                    />
+                );
             case "email":
-                return <Input type="email" {...commonProps} />;
+                return (
+                    <Input
+                        type="email"
+                        required={field.required}
+                        {...commonProps}
+                    />
+                );
             case "date":
-                return <Input type="date" {...commonProps} />;
+                return (
+                    <Input
+                        type="date"
+                        required={field.required}
+                        {...commonProps}
+                    />
+                );
             case "dropdown":
                 return (
-                    <select {...commonProps}>
+                    <select required={field.required} {...commonProps}>
                         <option
                             value=""
                             className={cn(
@@ -134,6 +151,7 @@ export const PublicViewPage = () => {
                                                 opt
                                             )
                                         }
+                                        required={field.required}
                                     />
                                     <Label htmlFor={field.fieldKey}>
                                         {opt}
@@ -211,6 +229,11 @@ export const PublicViewPage = () => {
                                                             <div className="flex flex-col items-start gap-3 mb-2">
                                                                 <h3>
                                                                     {f.label}
+                                                                    <span className="text-red-500">
+                                                                        {f.required
+                                                                            ? "*"
+                                                                            : ""}
+                                                                    </span>
                                                                 </h3>
                                                                 {renderField(f)}
                                                             </div>
