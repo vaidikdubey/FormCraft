@@ -56,7 +56,9 @@ export const ThankYouPage = () => {
                                                     "p-0 pl-1 text-hover-text cursor-pointer font-semibold dark:font-normal"
                                                 )}
                                             >
-                                                <Link to={`/edit/${url}`}>
+                                                <Link
+                                                    to={`/edit/${url}/${responseId}`}
+                                                >
                                                     Edit Response
                                                 </Link>
                                             </Button>

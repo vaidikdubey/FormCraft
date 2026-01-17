@@ -33,6 +33,9 @@ export const useResponseStore = create((set) => ({
 
             return { success: false, data: null };
         }
+        finally {
+            set({ isSubmittingForm: false });
+        }
     },
 
     getAllResponses: async (formId) => {

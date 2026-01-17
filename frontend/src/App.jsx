@@ -21,6 +21,7 @@ import { ThankYouPage } from "./page/form/responses/ThankYouPage";
 import { AllResponsesPage } from "./page/form/responses/AllResponsesPage";
 import { UpgradeUser } from "./page/payment/UpgradeUser";
 import { GetResponsePage } from "./page/form/responses/GetResponsePage";
+import { EditResponsePage } from "./page/form/responses/EditResponsePage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -114,6 +115,11 @@ function App() {
                     <Route
                         path="/response/:formId/:responseId"
                         element={<GetResponsePage />}
+                    />
+
+                    <Route
+                        path="/edit/:url/:responseId"
+                        element={<EditResponsePage />}
                     />
 
                     {/* Protected Routes */}

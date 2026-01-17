@@ -1,5 +1,5 @@
+import React, { useEffect, useState, useRef } from "react";
 import { useFormStore } from "@/store/useFormStore";
-import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useResponseStore } from "@/store/useResponseStore";
@@ -12,10 +12,21 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
-export const PublicViewPage = () => {
+export const EditResponsePage = () => {
+    const { url, responseId } = useParams();
+
     const navigate = useNavigate();
 
-    const { isSubmittingForm, submitForm } = useResponseStore();
+    const { isSubmittingForm, submitForm, getResponse, response } =
+        useResponseStore();
+
+    const { formPublicView, getPublicView } = useFormStore();
+
+    useEffect(() => {
+        getPublicView(url);
+        getResponse(responseId);
+        //eslint-disable-next-line
+    }, [url, responseId]);
 
     const operationFn = {
         equals: (a, b) => a === b,
@@ -23,25 +34,15 @@ export const PublicViewPage = () => {
         contains: (a, b) => String(a).includes(String(b)),
     };
 
-    const { url } = useParams();
-
-    const { formPublicView, getPublicView } = useFormStore();
+    const isResponseInitialized = useRef(false);
 
     const [responses, setResponses] = useState({});
 
     const targetFieldsArray = formPublicView?.conditions?.map(
-        (cond) => cond.targetFieldId
+        (cond) => cond.targetFieldId,
     );
 
-    const handleInputChange = (fieldId, e, type, option = undefined) => {
-        let finalValue;
-
-        if (type === "checkbox") {
-            finalValue = [option];
-        } else {
-            finalValue = e.target.value;
-        }
-
+    const handleInputChange = (fieldId, finalValue) => {
         setResponses((prev) => ({ ...prev, [fieldId]: finalValue }));
     };
 
@@ -50,7 +51,7 @@ export const PublicViewPage = () => {
 
         const conditionObject =
             formPublicView?.conditions?.find(
-                (cond) => cond.targetFieldId === field.fieldKey
+                (cond) => cond.targetFieldId === field.fieldKey,
             ) ?? null;
 
         if (!conditionObject) return true;
@@ -70,39 +71,58 @@ export const PublicViewPage = () => {
         return actions === "show" ? false : true;
     };
 
+    useEffect(() => {
+        if (response?.data?.answer && !isResponseInitialized.current) {
+            setResponses(response?.data?.answer);
+            isResponseInitialized.current = true;
+        }
+    }, [response]);
+
+    useEffect(() => {
+        isResponseInitialized.current = false;
+    }, [responseId]);
+
     const renderField = (field) => {
+        // const userResponse = response?.data?.answer;
+
+        const currentVal = responses[field?.fieldKey] || "";
+
         const commonProps = {
             id: field.id,
             required: field?.required,
             className: cn("w-full p-2 border rounded-md"),
-            placeholder: field.placeholder,
-            onChange: (e) => handleInputChange(field.fieldKey, e, field.type),
+            placeholder: field?.placeholder,
+            onChange: (e) => handleInputChange(field.fieldKey, e.target.value),
         };
 
         switch (field.type) {
             case "text":
-                return <Input type="text" {...commonProps} />;
+                return (
+                    <Input type="text" value={currentVal} {...commonProps} />
+                );
             case "email":
-                return <Input type="email" {...commonProps} />;
+                return (
+                    <Input type="email" value={currentVal} {...commonProps} />
+                );
             case "date":
-                return <Input type="date" {...commonProps} />;
+                return (
+                    <Input type="date" value={currentVal} {...commonProps} />
+                );
             case "dropdown":
                 return (
-                    <select {...commonProps}>
-                        <option
-                            value=""
-                            className={cn(
-                                "bg-white dark:bg-background text-foreground"
-                            )}
-                        >
-                            Select an option...
-                        </option>
+                    <select
+                        {...commonProps}
+                        value={currentVal}
+                        className={cn(
+                            "bg-white dark:bg-background text-foreground",
+                        )}
+                    >
                         {field.options.map((opt) => (
                             <option
                                 key={opt}
                                 value={opt}
                                 className={cn(
-                                    "bg-white dark:bg-background text-foreground"
+                                    "bg-white dark:bg-background text-foreground",
                                 )}
                             >
                                 {opt}
@@ -114,8 +134,7 @@ export const PublicViewPage = () => {
                 return (
                     <div>
                         {field.options?.map((opt) => {
-                            const selectedValue =
-                                responses[field?.fieldKey] ?? [];
+                            const selectedValue = currentVal ?? [];
                             return (
                                 <div
                                     key={opt}
@@ -126,14 +145,15 @@ export const PublicViewPage = () => {
                                         checked={
                                             selectedValue.includes(opt) ?? false
                                         }
-                                        onCheckedChange={(e) =>
+                                        onCheckedChange={(checked) => {
+                                            const next = checked ? [opt] : [];
                                             handleInputChange(
                                                 field.fieldKey,
-                                                e,
-                                                field.type,
-                                                opt
-                                            )
-                                        }
+                                                next,
+                                            );
+                                        }}
+                                        required={field?.required}
+                                        placeholder={field?.placeholder}
                                     />
                                     <Label htmlFor={field.fieldKey}>
                                         {opt}
@@ -149,11 +169,6 @@ export const PublicViewPage = () => {
         }
     };
 
-    useEffect(() => {
-        getPublicView(url);
-        //eslint-disable-next-line
-    }, [url]);
-
     const handleSubmit = async () => {
         const result = await submitForm(responses, formPublicView._id);
 
@@ -163,7 +178,7 @@ export const PublicViewPage = () => {
                     `/thankyou/${url}/${result.data.data._id}/${formPublicView._id}`,
                     {
                         replace: true,
-                    }
+                    },
                 );
             }, 0);
         }
@@ -175,7 +190,7 @@ export const PublicViewPage = () => {
                 asChild
                 variant="secondary"
                 className={cn(
-                    "hidden lg:block absolute left-8 top-9 bg-foreground text-background hover:text-hover-text font-semibold"
+                    "hidden lg:block absolute left-8 top-9 bg-foreground text-background hover:text-hover-text font-semibold",
                 )}
             >
                 <Link to={`${window.location.origin}/login`}>Login</Link>
@@ -185,7 +200,7 @@ export const PublicViewPage = () => {
                 variant="outline"
                 size="icon-sm"
                 className={cn(
-                    "flex items-center jusify-center lg:hidden absolute top-3 left-2"
+                    "flex items-center jusify-center lg:hidden absolute top-3 left-2",
                 )}
             >
                 <Link to={`${window.location.origin}/login`}>
@@ -231,7 +246,7 @@ export const PublicViewPage = () => {
                                                         </div>
                                                     </CardContent>
                                                 </Card>
-                                            )
+                                            ),
                                     )
                                 ) : (
                                     <div className="w-full text-muted-foreground italic text-center border border-dashed border-gray-400 p-10 rounded-xl">
