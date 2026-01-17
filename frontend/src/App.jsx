@@ -19,6 +19,7 @@ import { UpdateFormPage } from "./page/form/Build Form/UpdateFormPage";
 import { PublicViewPage } from "./page/form/responses/PublicViewPage";
 import { ThankYouPage } from "./page/form/responses/ThankYouPage";
 import { AllResponsesPage } from "./page/form/responses/AllResponsesPage";
+import { UpgradeUser } from "./page/payment/UpgradeUser";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -136,6 +137,8 @@ function App() {
                             path="/responses/:formId"
                             element={<AllResponsesPage />}
                         />
+
+                        <Route path="/upgrade" element={<UpgradeUser />} />
                     </Route>
                 </Route>
             </Routes>
