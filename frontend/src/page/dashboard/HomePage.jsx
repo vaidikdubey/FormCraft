@@ -45,11 +45,7 @@ export const HomePage = () => {
         cloneForm,
     } = useFormStore();
 
-    const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
-
-    useEffect(() => {
-        checkAuth();
-    }, [checkAuth]);
+    const { authUser } = useAuthStore();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -87,18 +83,6 @@ export const HomePage = () => {
 
         if (result) setIsDialogOpen(false);
     };
-
-    if (isCheckingAuth) {
-        return (
-            <div className="h-full flex items-center justify-center">
-                <Loader className="animate-spin text-pink-500" />
-            </div>
-        );
-    }
-
-    if (!authUser) {
-        return <Navigate to={"/login"} replace />;
-    }
 
     return (
         <div className="flex flex-col w-full h-full items-center px-5">
