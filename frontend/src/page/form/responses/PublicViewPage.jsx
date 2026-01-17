@@ -173,9 +173,18 @@ export const PublicViewPage = () => {
     }, [url]);
 
     const handleSubmit = async () => {
-        const success = await submitForm(responses, formPublicView._id);
+        const result = await submitForm(responses, formPublicView._id);
 
-        if (success) navigate(`/thankyou/${url}`, { replace: true });
+        if (result.success) {
+            setTimeout(() => {
+                navigate(
+                    `/thankyou/${url}/${result.data.data._id}/${formPublicView._id}`,
+                    {
+                        replace: true,
+                    }
+                );
+            }, 0);
+        }
     };
 
     return (

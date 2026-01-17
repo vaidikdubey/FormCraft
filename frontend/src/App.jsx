@@ -106,7 +106,15 @@ function App() {
 
                     <Route path="/form/:url" element={<PublicViewPage />} />
 
-                    <Route path="/thankyou/:url" element={<ThankYouPage />} />
+                    <Route
+                        path="/thankyou/:url/:responseId/:formId"
+                        element={<ThankYouPage />}
+                    />
+
+                    <Route
+                        path="/response/:formId/:responseId"
+                        element={<GetResponsePage />}
+                    />
 
                     {/* Protected Routes */}
                     <Route element={<ProtectedRoute />}>
@@ -140,11 +148,6 @@ function App() {
                         />
 
                         <Route path="/upgrade" element={<UpgradeUser />} />
-
-                        <Route
-                            path="/response/:formId/:responseId"
-                            element={<GetResponsePage />}
-                        />
                     </Route>
                 </Route>
             </Routes>

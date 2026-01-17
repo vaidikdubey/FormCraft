@@ -7,7 +7,7 @@ import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export const ThankYouPage = () => {
-    const { url } = useParams();
+    const { url, responseId, formId } = useParams();
 
     const { formPublicView, getPublicView } = useFormStore();
 
@@ -33,17 +33,35 @@ export const ThankYouPage = () => {
                                     Thank you for submitting.
                                 </p>
                                 <div className="w-full flex flex-col justify-between items-start mt-8 gap-8">
-                                    {formPublicView?.ownerId?.role !==
-                                        "free" && (
+                                    <div className="w-full flex justify-between items-center">
                                         <Button
+                                            asChild
                                             variant="link"
                                             className={cn(
-                                                "p-0 pl-1 hover:text-hover-text"
+                                                "p-0 pr-1 text-hover-text cursor-pointer font-semibold dark:font-normal"
                                             )}
                                         >
-                                            Edit your response
+                                            <Link
+                                                to={`/response/${formId}/${responseId}`}
+                                            >
+                                                View Response
+                                            </Link>
                                         </Button>
-                                    )}
+                                        {formPublicView?.ownerId?.role !==
+                                            "free" && (
+                                            <Button
+                                                asChild
+                                                variant="link"
+                                                className={cn(
+                                                    "p-0 pl-1 text-hover-text cursor-pointer font-semibold dark:font-normal"
+                                                )}
+                                            >
+                                                <Link to={`/edit/${url}`}>
+                                                    Edit Response
+                                                </Link>
+                                            </Button>
+                                        )}
+                                    </div>
                                     <Button
                                         asChild
                                         variant="outline"

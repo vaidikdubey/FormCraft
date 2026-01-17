@@ -253,7 +253,7 @@ export const AllResponsesPage = () => {
                                     <span className="font-bold">User:</span>
                                     <Link
                                         to={`/response/${formId}/${d._id}`}
-                                        className="hover:text-hover-text hover:underline text-primary truncate max-w-[150px]"
+                                        className="hover:text-hover-text hover:underline text-primary truncate max-w-37.5"
                                     >
                                         {d.userId ? d.userId : "Anonymous"}
                                     </Link>

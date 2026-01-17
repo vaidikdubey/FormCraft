@@ -24,14 +24,14 @@ export const useResponseStore = create((set) => ({
 
             toast.success(res.msg || "Form submitted");
 
-            return true;
+            return { success: true, data: res.data };
         } catch (error) {
             console.error("Error submitting response", error);
             toast.error(
                 error.response.data.message || "Error submitting response"
             );
 
-            return false;
+            return { success: false, data: null };
         }
     },
 
@@ -62,8 +62,7 @@ export const useResponseStore = create((set) => ({
         } catch (error) {
             console.error("Error getting response", error);
             toast.error("Error getting response");
-        }
-        finally {
+        } finally {
             set({ isGettingResponse: false });
         }
     },
