@@ -39,7 +39,7 @@ export const Navbar = () => {
 
     useEffect(() => {
         fetchAllForms();
-    }, []);
+    }, [fetchAllForms]);
 
     const filteredForms = forms?.filter((form) =>
         form.title.toLowerCase().includes(finalState.toLowerCase())
@@ -120,7 +120,7 @@ export const Navbar = () => {
                                 filteredForms.map((form) => (
                                     <Link
                                         key={form._id}
-                                        to={`/getForm/${form._id}`}
+                                        to={`/responses/${form._id}`}
                                         className={cn(
                                             "block px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm"
                                         )}

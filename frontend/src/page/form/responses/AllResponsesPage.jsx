@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { useFormStore } from "@/store/useFormStore";
 import { useResponseStore } from "@/store/useResponseStore";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { timeAgo } from "@/utils/timeAgo";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Crown, Trash2 } from "lucide-react";
@@ -144,8 +144,18 @@ export const AllResponsesPage = () => {
 
                                 return (
                                     <TableRow key={d._id}>
-                                        <TableCell>
-                                            {d.userId ? d.userId : "Anonymous"}
+                                        <TableCell
+                                            className={cn(
+                                                "hover:text-hover-text hover:underline"
+                                            )}
+                                        >
+                                            <Link
+                                                to={`/response/${formId}/${d._id}`}
+                                            >
+                                                {d.userId
+                                                    ? d.userId
+                                                    : "Anonymous"}
+                                            </Link>
                                         </TableCell>
                                         {responsesArray.map((ans) => (
                                             <TableCell>{ans}</TableCell>

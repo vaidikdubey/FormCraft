@@ -20,6 +20,7 @@ import { PublicViewPage } from "./page/form/responses/PublicViewPage";
 import { ThankYouPage } from "./page/form/responses/ThankYouPage";
 import { AllResponsesPage } from "./page/form/responses/AllResponsesPage";
 import { UpgradeUser } from "./page/payment/UpgradeUser";
+import { GetResponsePage } from "./page/form/responses/GetResponsePage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -139,6 +140,11 @@ function App() {
                         />
 
                         <Route path="/upgrade" element={<UpgradeUser />} />
+
+                        <Route
+                            path="/response/:formId/:responseId"
+                            element={<GetResponsePage />}
+                        />
                     </Route>
                 </Route>
             </Routes>

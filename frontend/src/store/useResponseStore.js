@@ -9,6 +9,8 @@ export const useResponseStore = create((set) => ({
     isDeletingAllResponses: false,
     isGettingAllResponses: false,
     allResponses: [],
+    isGettingResponse: false,
+    respone: null,
 
     submitForm: async (data, id) => {
         set({ isSubmittingForm: true });
@@ -47,6 +49,22 @@ export const useResponseStore = create((set) => ({
             toast.error("Error getting responses");
         } finally {
             set({ isGettingAllResponses: false });
+        }
+    },
+
+    getResponse: async (id) => {
+        set({ isGettingResponse: true });
+
+        try {
+            const res = await axiosInstance.get(`/response/getResponse/${id}`);
+
+            set({ response: res.data });
+        } catch (error) {
+            console.error("Error getting response", error);
+            toast.error("Error getting response");
+        }
+        finally {
+            set({ isGettingResponse: false });
         }
     },
 
