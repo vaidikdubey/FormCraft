@@ -1,10 +1,11 @@
-import { Razorpay } from "razorpay";
+import Razorpay from "razorpay";
 import crypty from "crypto";
 import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { ApiError } from "../utils/api-error.js";
 import { UserRolesEnum } from "../utils/constants.js";
+import 'dotenv/config';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
