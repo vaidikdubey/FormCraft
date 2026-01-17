@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { ApiError } from "../utils/api-error.js";
 import { UserRolesEnum } from "../utils/constants.js";
-import 'dotenv/config';
+import "dotenv/config";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -18,7 +18,7 @@ const createOrder = asyncHandler(async (req, res) => {
   const options = {
     amount: amount * 100, //convert amount to paise
     currency: "INR",
-    receipt: `receipt_${req.user.id}_${Date.now()}`,
+    receipt: `rcpt_${req.user.id.toString().slice(-6)}_${Math.floor(Math.random() * 10000)}`,
     payment_capture: 1,
   };
 
