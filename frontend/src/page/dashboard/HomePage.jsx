@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import { Navbar } from "./Navbar";
 import { useFormStore } from "@/store/useFormStore";
 import { timeAgo } from "@/utils/timeAgo";
-import { ExternalLink, Trash2, Edit, Copy } from "lucide-react";
+import { ExternalLink, Trash2, Edit, Copy, Loader } from "lucide-react";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
 
 //Shadcn components
@@ -45,7 +45,23 @@ export const HomePage = () => {
         cloneForm,
     } = useFormStore();
 
-    const { authUser } = useAuthStore();
+    const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
+
+    if (isCheckingAuth) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader className="animate-spin text-pink-500" />
+            </div>
+        );
+    }
+
+    if (!authUser) {
+        return <Navigate to={"/login"} replace />;
+    }
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -89,7 +105,7 @@ export const HomePage = () => {
             <Navbar />
             <main
                 className={cn(
-                    "flex-1 flex flex-col justify-center items-center text-3xl font-bold overflow-y-auto"
+                    "flex-1 flex flex-col justify-center items-center text-3xl font-bold overflow-y-auto",
                 )}
             >
                 {forms?.length > 0 ? (
@@ -123,7 +139,7 @@ export const HomePage = () => {
                                                 size="icon"
                                                 onClick={() =>
                                                     navigate(
-                                                        `${window.location.origin}/update/${form._id}`
+                                                        `${window.location.origin}/update/${form._id}`,
                                                     )
                                                 }
                                             >
@@ -170,7 +186,7 @@ export const HomePage = () => {
                                                             onClick={(e) => {
                                                                 e.preventDefault();
                                                                 handleFormDelete(
-                                                                    form._id
+                                                                    form._id,
                                                                 );
                                                             }}
                                                             disabled={
@@ -203,7 +219,7 @@ export const HomePage = () => {
                                                 onCheckedChange={(c) =>
                                                     handlePublishedChange(
                                                         c,
-                                                        form._id
+                                                        form._id,
                                                     )
                                                 }
                                                 disabled={isPublishing}
@@ -221,7 +237,7 @@ export const HomePage = () => {
                                                         "free"
                                                     ) {
                                                         return toast.error(
-                                                            "Upgrade to PRO for editing feature"
+                                                            "Upgrade to PRO for editing feature",
                                                         );
                                                     }
                                                     handleFormUpdate(
@@ -229,7 +245,7 @@ export const HomePage = () => {
                                                             allowEditing:
                                                                 checked,
                                                         },
-                                                        form._id
+                                                        form._id,
                                                     );
                                                 }}
                                             />
@@ -243,7 +259,7 @@ export const HomePage = () => {
                                                 onCheckedChange={(c) =>
                                                     handleFormUpdate(
                                                         { allowAnonymous: c },
-                                                        form._id
+                                                        form._id,
                                                     )
                                                 }
                                             />
@@ -278,7 +294,7 @@ export const HomePage = () => {
                                         <TableHead></TableHead>
                                         <TableHead
                                             className={cn(
-                                                "text-hover-text font-semibold"
+                                                "text-hover-text font-semibold",
                                             )}
                                         >
                                             Form Title
@@ -295,14 +311,14 @@ export const HomePage = () => {
                                         </TableHead>
                                         <TableHead
                                             className={cn(
-                                                "text-hover-text text-right"
+                                                "text-hover-text text-right",
                                             )}
                                         >
                                             Edit Response
                                         </TableHead>
                                         <TableHead
                                             className={cn(
-                                                "text-hover-text text-right"
+                                                "text-hover-text text-right",
                                             )}
                                         >
                                             Anonymous
@@ -338,7 +354,7 @@ export const HomePage = () => {
                                                     size="icon"
                                                     onClick={() =>
                                                         handleFormClone(
-                                                            form._id
+                                                            form._id,
                                                         )
                                                     }
                                                     disabled={isCloningForm}
@@ -348,7 +364,7 @@ export const HomePage = () => {
                                             </TableCell>
                                             <TableCell
                                                 className={cn(
-                                                    "font-semibold hover:underline hover:text-hover-text"
+                                                    "font-semibold hover:underline hover:text-hover-text",
                                                 )}
                                             >
                                                 <Link
@@ -369,7 +385,7 @@ export const HomePage = () => {
                                                     onCheckedChange={(c) =>
                                                         handlePublishedChange(
                                                             c,
-                                                            form._id
+                                                            form._id,
                                                         )
                                                     }
                                                     disabled={isPublishing}
@@ -380,7 +396,7 @@ export const HomePage = () => {
                                                     id="editing"
                                                     checked={form.allowEditing}
                                                     onCheckedChange={(
-                                                        checked
+                                                        checked,
                                                     ) => {
                                                         if (
                                                             authUser?.data
@@ -388,7 +404,7 @@ export const HomePage = () => {
                                                             "free"
                                                         ) {
                                                             return toast.error(
-                                                                "Upgrade to PRO for editing feature"
+                                                                "Upgrade to PRO for editing feature",
                                                             );
                                                         }
                                                         handleFormUpdate(
@@ -396,7 +412,7 @@ export const HomePage = () => {
                                                                 allowEditing:
                                                                     checked,
                                                             },
-                                                            form._id
+                                                            form._id,
                                                         );
                                                     }}
                                                 />
@@ -413,7 +429,7 @@ export const HomePage = () => {
                                                                 allowAnonymous:
                                                                     c,
                                                             },
-                                                            form._id
+                                                            form._id,
                                                         )
                                                     }
                                                 />
@@ -424,7 +440,7 @@ export const HomePage = () => {
                                                     size="icon"
                                                     onClick={() =>
                                                         copyToClipboard(
-                                                            form.publicURL
+                                                            form.publicURL,
                                                         )
                                                     }
                                                 >
@@ -444,7 +460,7 @@ export const HomePage = () => {
                                                         size="icon"
                                                         onClick={() =>
                                                             navigate(
-                                                                `${window.location.origin}/update/${form._id}`
+                                                                `${window.location.origin}/update/${form._id}`,
                                                             )
                                                         }
                                                     >
@@ -503,11 +519,11 @@ export const HomePage = () => {
                                                                 <Button
                                                                     variant="destructive"
                                                                     onClick={(
-                                                                        e
+                                                                        e,
                                                                     ) => {
                                                                         e.preventDefault();
                                                                         handleFormDelete(
-                                                                            form._id
+                                                                            form._id,
                                                                         );
                                                                     }}
                                                                     disabled={
