@@ -60,13 +60,7 @@ function App() {
                         path="/login"
                         element={
                             authUser ? (
-                                <Navigate
-                                    to={
-                                        window.history.state?.usr?.from
-                                            ?.pathname || "/"
-                                    }
-                                    replace
-                                />
+                                <Navigate to={"/"} replace />
                             ) : (
                                 <LoginPage />
                             )
@@ -79,13 +73,7 @@ function App() {
                             !authUser ? (
                                 <RegisterPage />
                             ) : (
-                                <Navigate
-                                    to={
-                                        window.history.state?.usr?.from
-                                            ?.pathname || "/"
-                                    }
-                                    replace
-                                />
+                                <Navigate to={"/"} replace />
                             )
                         }
                     />
