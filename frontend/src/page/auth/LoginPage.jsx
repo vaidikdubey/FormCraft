@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "@/lib/zod";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeClosed } from "lucide-react";
 
 //Shadcn components
@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const LoginPage = () => {
+    const navigate = useNavigate();
+
     const { login, isLoggingIn } = useAuthStore();
 
     const [showPassword, setShowPassword] = useState(false);
@@ -38,8 +40,10 @@ export const LoginPage = () => {
         },
     });
 
-    const onSubmit = (data) => {
-        login(data);
+    const onSubmit = async (data) => {
+        const success = await login(data);
+
+        if (success) setTimeout(() => navigate("/", { replace: true }), 1000);
     };
 
     return (
@@ -57,7 +61,7 @@ export const LoginPage = () => {
                         <Button
                             variant="link"
                             className={cn(
-                                "hover:underline cursor-pointer hover:text-hover-text hover:font-bold"
+                                "hover:underline cursor-pointer hover:text-hover-text hover:font-bold",
                             )}
                         >
                             <Link to={"/signup"}>Sign Up</Link>
@@ -78,14 +82,14 @@ export const LoginPage = () => {
                                 className={cn(
                                     "placeholder:text-stone-400",
                                     errors.email &&
-                                        "border-red-500 focus-visible:ring-red-500"
+                                        "border-red-500 focus-visible:ring-red-500",
                                 )}
                                 {...register("email")}
                             />
                             {errors.email && (
                                 <p
                                     className={cn(
-                                        "text-xs font-medium text-red-500 mt-1"
+                                        "text-xs font-medium text-red-500 mt-1",
                                     )}
                                 >
                                     {errors.email.message}
@@ -97,7 +101,7 @@ export const LoginPage = () => {
                         <div>
                             <div
                                 className={cn(
-                                    "flex justify-between items-center"
+                                    "flex justify-between items-center",
                                 )}
                             >
                                 <Label
@@ -109,7 +113,7 @@ export const LoginPage = () => {
                                 <Link
                                     to={"/forgot-password"}
                                     className={cn(
-                                        "text-xs text-muted-foreground hover:underline hover:text-hover-text"
+                                        "text-xs text-muted-foreground hover:underline hover:text-hover-text",
                                     )}
                                 >
                                     Forgot password?
@@ -123,7 +127,7 @@ export const LoginPage = () => {
                                     className={cn(
                                         "placeholder:text-stone-400",
                                         errors.password &&
-                                            "border-red-500 focus-visible:ring-red-500"
+                                            "border-red-500 focus-visible:ring-red-500",
                                     )}
                                     {...register("password")}
                                 />
@@ -144,7 +148,7 @@ export const LoginPage = () => {
                             {errors.password && (
                                 <p
                                     className={cn(
-                                        "text-xs font-medium text-red-500 mt-1"
+                                        "text-xs font-medium text-red-500 mt-1",
                                     )}
                                 >
                                     {errors.password.message}

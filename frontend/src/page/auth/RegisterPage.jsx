@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SignupSchema } from "@/lib/zod";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeClosed } from "lucide-react";
 
 //Shadcn components
@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const RegisterPage = () => {
+    const navigate = useNavigate();
+
     const { signup, isSigninUp } = useAuthStore();
 
     const [showPassword, setShowPassword] = useState(false);
@@ -42,8 +44,10 @@ export const RegisterPage = () => {
         },
     });
 
-    const onSubmit = (data) => {
-        signup(data);
+    const onSubmit = async (data) => {
+        const success = await signup(data);
+
+        if (success) setTimeout(() => navigate("/", { replace: true }), 1000);
     };
 
     return (
@@ -61,7 +65,7 @@ export const RegisterPage = () => {
                         <Button
                             variant="link"
                             className={cn(
-                                "hover:underline cursor-pointer hover:text-hover-text hover:font-bold"
+                                "hover:underline cursor-pointer hover:text-hover-text hover:font-bold",
                             )}
                         >
                             <Link to={"/login"}>Login</Link>
@@ -82,7 +86,7 @@ export const RegisterPage = () => {
                                 className={cn(
                                     "placeholder:text-stone-400",
                                     errors.name &&
-                                        "border-red-500 focus-visible:ring-red-500"
+                                        "border-red-500 focus-visible:ring-red-500",
                                 )}
                                 {...register("name")}
                             />
@@ -105,14 +109,14 @@ export const RegisterPage = () => {
                                 className={cn(
                                     "placeholder:text-stone-400",
                                     errors.email &&
-                                        "border-red-500 focus-visible:ring-red-500"
+                                        "border-red-500 focus-visible:ring-red-500",
                                 )}
                                 {...register("email")}
                             />
                             {errors.email && (
                                 <p
                                     className={cn(
-                                        "text-xs font-medium text-red-500 mt-1"
+                                        "text-xs font-medium text-red-500 mt-1",
                                     )}
                                 >
                                     {errors.email.message}
@@ -133,7 +137,7 @@ export const RegisterPage = () => {
                                     className={cn(
                                         "placeholder:text-stone-400",
                                         errors.password &&
-                                            "border-red-500 focus-visible:ring-red-500"
+                                            "border-red-500 focus-visible:ring-red-500",
                                     )}
                                     {...register("password")}
                                 />
@@ -154,7 +158,7 @@ export const RegisterPage = () => {
                             {errors.password && (
                                 <p
                                     className={cn(
-                                        "text-xs font-medium text-red-500 mt-1"
+                                        "text-xs font-medium text-red-500 mt-1",
                                     )}
                                 >
                                     {errors.password.message}
@@ -182,7 +186,7 @@ export const RegisterPage = () => {
                                     className={cn(
                                         "placeholder:text-stone-400",
                                         errors.confirmPassword &&
-                                            "border-red-500 focus-visible:ring-red-500"
+                                            "border-red-500 focus-visible:ring-red-500",
                                     )}
                                     {...register("confirmPassword")}
                                 />
@@ -190,7 +194,7 @@ export const RegisterPage = () => {
                                     type="button"
                                     onClick={() =>
                                         setShowConfirmPassword(
-                                            !showConfirmPassword
+                                            !showConfirmPassword,
                                         )
                                     }
                                     className={cn("cursor-pointer")}
@@ -205,7 +209,7 @@ export const RegisterPage = () => {
                             {errors.confirmPassword && (
                                 <p
                                     className={cn(
-                                        "text-xs font-medium text-red-500 mt-1"
+                                        "text-xs font-medium text-red-500 mt-1",
                                     )}
                                 >
                                     {errors.confirmPassword.message}
