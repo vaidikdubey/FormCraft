@@ -48,5 +48,6 @@ export const AvailablePaymentStatus = Object.values(PaymentStatusEnum);
 export const cookieOptions = {
   httpOnly: true,
   secure: true,
+  sameSite: "none",
   maxAge: 15 * 60 * 1000, //15min
 };
