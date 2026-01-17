@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { timeAgo } from "@/utils/timeAgo";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Crown, Trash2 } from "lucide-react";
+import { Crown, Trash2, ArrowLeft } from "lucide-react";
 
 //Shadcn components
 import {
@@ -74,6 +74,14 @@ export const AllResponsesPage = () => {
 
     return (
         <div className="h-full w-full flex flex-col items-center bg-background text-foreground">
+            <Button
+                variant="ghost"
+                size="icon"
+                className={cn("absolute left-2 lg:left-8 top-9")}
+                onClick={() => window.history.back()}
+            >
+                <ArrowLeft />
+            </Button>
             <div className="w-full flex flex-col items-center justify-center gap-5 px-10">
                 <h1 className="text-3xl text-hover-text font-bold">
                     {form?.title}

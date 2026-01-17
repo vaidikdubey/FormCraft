@@ -140,6 +140,7 @@ export const GetResponsePage = () => {
                 variant="ghost"
                 size="icon"
                 className={cn("absolute left-2 lg:left-8 top-9")}
+                onClick={() => window.history.back()}
             >
                 <ArrowLeft />
             </Button>
