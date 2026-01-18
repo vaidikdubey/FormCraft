@@ -15,19 +15,20 @@ import {
     SortableContext,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { snapCenterToCursor, restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { nanoid } from "nanoid";
-import { Share2, ArrowLeft, Save, Loader2, Crown } from "lucide-react";
+import { Share2, ArrowLeft, Save, Loader2, Crown, Menu, X } from "lucide-react";
 import { useDebounce } from "@/store/useDebounce";
 import { useFormStore } from "@/store/useFormStore";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
 
-//Custom Components
+// Custom Components
 import { SidebarDraggableItem } from "./SidebarDraggableItem";
 import { SortableFieldCard } from "./SortableFieldCard";
 import { PublishDialog } from "./PublishDialog";
 
-//Shadcn components
+// Shadcn components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -64,7 +65,7 @@ export const UpdateFormPage = () => {
     } = useFormStore();
 
     const { authUser } = useAuthStore();
-
+    
     //For local updates -> To make UI smooth
     const [formData, setFormData] = useState({
         title: "",
@@ -80,8 +81,9 @@ export const UpdateFormPage = () => {
     const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
     const [lastSaved, setLastSaved] = useState(null);
     const [publishStatus, setPublishStatus] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // Debounce the entire form object
+    //Debounce the entire form object
     const debouncedFormData = useDebounce(formData, 2000);
 
     useEffect(() => {
@@ -127,10 +129,10 @@ export const UpdateFormPage = () => {
 
     //Sensor for detecting drag movement
     const sensors = useSensors(
-        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }), //Pixes before activation
+        useSensor(PointerSensor, { activationConstraint: { distance: 5 } }), //Pixels before activation
         useSensor(TouchSensor, {
             activationConstraint: { delay: 250, tolerance: 5 },
-        })
+        }),
     );
 
     const handleDragStart = (event) => {
@@ -140,6 +142,11 @@ export const UpdateFormPage = () => {
     const handleDragEnd = (event) => {
         const { active, over } = event;
         setActiveDragItem(null);
+
+        // Auto-close sidebar on successful drop from sidebar
+        if (active.data.current?.type === "SIDEBAR_ITEM" && over) {
+            setIsSidebarOpen(false);
+        }
 
         if (!over) return;
 
@@ -321,7 +328,7 @@ export const UpdateFormPage = () => {
                                         })
                                     }
                                     className={cn(
-                                        "data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-pink-500 border-2 border-transparent focus-visible:ring-pink-600"
+                                        "data-[state=unchecked]:bg-neutral-500 data-[state=checked]:bg-pink-500 border-2 border-transparent focus-visible:ring-pink-600",
                                     )}
                                 />
                                 <Label className="text-sm">Edit Response</Label>
@@ -373,11 +380,22 @@ export const UpdateFormPage = () => {
                                 <Share2 size={14} className="mr-2" /> Share Link
                             </Button>
                         )}
+
+                        <div className="md:hidden w-full flex items-center justify-end px-2">
+                            <Button
+                            variant="outline"
+                            size="icon"
+                            className="md:hidden"
+                            onClick={() => setIsSidebarOpen((prev) => !prev)}
+                        >
+                            <Menu size={18} />
+                        </Button>
+                        </div>
                     </div>
                 </header>
 
                 {/* WORKSPACE */}
-                <div className="flex flex-1 overflow-hidden">
+                <div className="flex flex-1 overflow-hidden relative">
                     {/* Main Canvas (Scrollable) */}
                     <main className="flex-1 overflow-y-auto p-8 flex justify-center bg-background no-scrollbar">
                         <div className="w-full max-w-3xl space-y-4 pb-24">
@@ -457,16 +475,54 @@ export const UpdateFormPage = () => {
                         </div>
                     </main>
 
-                    {/* Sidebar */}
-                    <aside className="hidden md:block w-fit bg-backgroun border-l-2 p-5 overflow-y-auto shadow-sm z-40">
+                    {/* Desktop Sidebar */}
+                    <aside className="hidden md:block w-fit bg-background border-l-2 p-5 overflow-y-auto shadow-sm z-40">
                         <h3 className="font-semibold mb-4 text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                             Field Types
                         </h3>
                         <div className="grid grid-cols-2 gap-4">
+                            <SidebarDraggableItem type="TEXT" label="Text" />
+                            <SidebarDraggableItem type="EMAIL" label="Email" />
                             <SidebarDraggableItem
-                                type="TEXT"
-                                label="Text"
+                                type="DROPDOWN"
+                                label="Dropdown"
                             />
+                            <SidebarDraggableItem
+                                type="CHECKBOX"
+                                label="Checkbox"
+                            />
+                            <SidebarDraggableItem type="DATE" label="Date" />
+                        </div>
+                    </aside>
+
+                    {/* Mobile Backdrop */}
+                    {isSidebarOpen && (
+                        <div
+                            className="absolute inset-0 bg-black/50 z-30 md:hidden"
+                            onClick={() => setIsSidebarOpen(false)}
+                        />
+                    )}
+
+                    {/* Mobile Sidebar */}
+                    <aside
+                        className={`absolute top-0 right-0 h-full w-80 block md:hidden bg-background border-l-2 p-5 overflow-y-auto shadow-2xl z-40 transition-transform duration-300 ease-in-out max-w-[60%] ${
+                            isSidebarOpen ? "translate-x-0" : "translate-x-full"
+                        }`}
+                    >
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="font-semibold text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                                Field Types
+                            </h3>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsSidebarOpen(false)}
+                            >
+                                <X size={18} />
+                            </Button>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4">
+                            <SidebarDraggableItem type="TEXT" label="Text" />
                             <SidebarDraggableItem type="EMAIL" label="Email" />
                             <SidebarDraggableItem
                                 type="DROPDOWN"
@@ -483,7 +539,7 @@ export const UpdateFormPage = () => {
             </div>
 
             {/* Drag Overlay */}
-            <DragOverlay>
+            <DragOverlay modifiers={[snapCenterToCursor, restrictToWindowEdges]}>
                 {activeDragItem ? (
                     <div className="bg-background p-4 rounded shadow-xl border w-60 opacity-90 cursor-grabbing flex items-center gap-2">
                         <span className="font-bold">
