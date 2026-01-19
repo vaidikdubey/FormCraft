@@ -2,7 +2,7 @@
 
 FormCraft is a no-code custom form builder that allows users to create, publish, and collect responses through dynamic forms without writing any code. It is designed for non-technical users who need a simple yet flexible way to collect structured data.
 
-The platform supports drag-and-drop form creation, basic conditional logic, public form sharing, anonymous submissions, and a response dashboard, with an optional paid upgrade to unlock higher response limits.
+The platform supports drag-and-drop form creation, conditional logic, public form sharing, anonymous submissions, and a response dashboard, with an optional paid upgrade to unlock higher response limits.
 
 ---
 
@@ -62,6 +62,12 @@ The platform supports drag-and-drop form creation, basic conditional logic, publ
   * Response editing
   * Export responses to CSV
 
+### CRON Job (Dormant Users)
+
+* Soft delete of user account with delete flag
+* CRON job for deletion of passive users after 30 days
+* Automated related forms and responses deletion in CRON job
+
 ---
 
 ## 🧑‍💻 User Roles
@@ -76,6 +82,8 @@ The platform supports drag-and-drop form creation, basic conditional logic, publ
 
 * Access forms via public links
 * Submit responses without authentication
+* View submitted response instantly
+* Edit response (if creator is Paid user)
 
 ### Paid User
 
@@ -90,13 +98,13 @@ The platform supports drag-and-drop form creation, basic conditional logic, publ
 
 * React
 * Vite
-* React Router
+* React Router DOM
 * React Hook Form
 * Zod
 * Zustand
 * Shadcn UI
 * Lucide React
-* Drag-and-drop library
+* DnD kit for Drag-and-drop
 * Tailwind CSS
 
 ### Backend
@@ -105,6 +113,8 @@ The platform supports drag-and-drop form creation, basic conditional logic, publ
 * Express.js
 * MongoDB
 * Mongoose
+* Express Validator
+* Node Cron (for cron jobs)
 
 ### Authentication
 
@@ -143,12 +153,11 @@ MongoDB is used due to its flexibility in handling dynamic and nested data struc
 
 ## 🔮 Future Enhancements
 
-* Advanced conditional logic
 * Form analytics and charts
 * Custom branding and white-labeling
 * Subscription-based billing
 * Third-party integrations (Zapier, CRM tools)
-* Webhooks and automation workflows
+* Webhooks
 
 ---
 
