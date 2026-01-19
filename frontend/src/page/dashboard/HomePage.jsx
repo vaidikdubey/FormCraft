@@ -29,6 +29,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CreateFormDialogue } from "../form/CreateFormDialog";
 
 export const HomePage = () => {
     const navigate = useNavigate();
@@ -532,12 +533,16 @@ export const HomePage = () => {
                 ) : (
                     <div className="flex flex-col items-center justify-center gap-4">
                         <h3>No forms found... Create one now!</h3>
-                        <Button
-                            variant="default"
-                            className={cn("font-bold hover:text-hover-text")}
-                        >
-                            + Create New Form
-                        </Button>
+                        <CreateFormDialogue>
+                            <Button
+                                variant="default"
+                                className={cn(
+                                    "font-bold hover:text-hover-text",
+                                )}
+                            >
+                                + Create New Form
+                            </Button>
+                        </CreateFormDialogue>
                     </div>
                 )}
             </main>
