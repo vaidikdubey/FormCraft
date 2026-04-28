@@ -108,7 +108,7 @@ export const Navbar = () => {
                         <XCircle className="h-4 w-4" />
                     </Button>
                 )}
-
+    
                 {finalState && (
                     <div
                         className={cn(

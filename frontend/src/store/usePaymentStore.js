@@ -8,6 +8,7 @@ export const usePaymentStore = create((set) => ({
     paymentData: null,
     isVerifyingPayment: false,
     verifyPaymentData: null,
+    isPaymentLoading: false,
 
     createOrder: async () => {
         set({ isPaymentLoading: true });
